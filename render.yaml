@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: aesir-axiom-ai-sales-assistant
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: AI_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: /tmp/aesir_axiom_leads.db
+      - key: CORS_ORIGINS
+        value: https://simsekerismetefe.wixsite.com
