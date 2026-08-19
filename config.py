@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -21,6 +22,19 @@ class Config:
     # Secrets intentionally have no usable source-code default.
     SECRET_KEY = os.environ.get("SECRET_KEY", "")
     GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+    ASGARDIAN_EMPLOYEE_USERNAME = os.environ.get(
+        "ASGARDIAN_EMPLOYEE_USERNAME",
+        "",
+    )
+    ASGARDIAN_EMPLOYEE_PASSWORD = os.environ.get(
+        "ASGARDIAN_EMPLOYEE_PASSWORD",
+        "",
+    )
+
+    SESSION_COOKIE_NAME = "asgardian_employee_session"
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=8)
 
     DATABASE_URL = os.environ.get(
         "DATABASE_URL",
@@ -70,12 +84,14 @@ class DevelopmentConfig(Config):
     """Configuration used during local development."""
 
     DEBUG = True
+    SESSION_COOKIE_SECURE = False
 
 
 class ProductionConfig(Config):
     """Configuration used in production deployments."""
 
     DEBUG = False
+    SESSION_COOKIE_SECURE = True
 
 
 config_by_name = {

@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from app.database import (
@@ -28,6 +28,16 @@ def create_app(config_name=None):
 
     app.register_blueprint(pages_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
+
+    @app.after_request
+    def secure_employee_responses(response):
+        if request.path.startswith("/dashboard") or request.path == "/api/leads":
+            response.headers["Cache-Control"] = "no-store, private"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["X-Frame-Options"] = "DENY"
+            response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers["Referrer-Policy"] = "no-referrer"
+        return response
 
     @app.get("/health")
     def health():

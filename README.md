@@ -28,6 +28,7 @@ aesir-axiom-ai-sales-assistant/
 ├── README.md
 └── app/
     ├── __init__.py
+    ├── auth.py
     ├── database.py
     ├── routes.py
     ├── templates/
@@ -39,6 +40,7 @@ aesir-axiom-ai-sales-assistant/
 ```
 
 - `config.py`: ortam değişkenleri ve uygulama yapılandırması
+- `app/auth.py`: çalışan oturumu, rol kontrolü ve CSRF doğrulaması
 - `app/database.py`: PostgreSQL/SQLite bağlantısı ve tüm veri işlemleri
 - `app/routes.py`: HTTP rotaları ve istek doğrulama
 - `app/services/ai_service.py`: tüm yapay zekâ sağlayıcı çağrıları
@@ -70,6 +72,8 @@ DATABASE_URL=sqlite:///aesir_axiom_leads.db
 AI_PROVIDER=groq
 AI_MODEL=openai/gpt-oss-20b
 GROQ_API_KEY=
+ASGARDIAN_EMPLOYEE_USERNAME=operator
+ASGARDIAN_EMPLOYEE_PASSWORD=
 CORS_ORIGINS=http://localhost:5000
 FLASK_ENV=development
 ```
@@ -116,7 +120,17 @@ bilgilerini açığa çıkarmadan etkin SQL altyapısını bildirir.
 ```
 
 ### `GET /api/leads`
-Lead kayıtlarını en yeniden eskiye listeler.
+Lead kayıtlarını en yeniden eskiye listeler. Yalnızca doğrulanmış `employee`
+oturumu erişebilir; anonim istekler `401` alır.
+
+### Çalışan paneli
+
+- `GET /dashboard/login`: güvenli çalışan girişi
+- `GET /dashboard`: rol korumalı lead yönetim ekranı
+- `POST /dashboard/logout`: CSRF korumalı oturum kapatma
+
+Kimlik bilgileri yalnızca ortam değişkenlerinden okunur. Kaynak kodda varsayılan
+parola yoktur; iki değer de eksiksiz tanımlanmadan çalışan girişi kapalı kalır.
 
 ## Render Deploy
 
@@ -135,6 +149,8 @@ en az aşağıdaki değerler bulunmalıdır:
 - `AI_PROVIDER=groq`
 - `AI_MODEL=openai/gpt-oss-20b`
 - `GROQ_API_KEY`
+- `ASGARDIAN_EMPLOYEE_USERNAME`
+- `ASGARDIAN_EMPLOYEE_PASSWORD`
 - `SECRET_KEY`
 - `DATABASE_URL`
 - `CORS_ORIGINS`
@@ -148,6 +164,9 @@ https://<render-servis-adresi>/health
 ## Güvenlik
 
 - API anahtarları kaynak kodda tutulmaz.
+- Çalışan parolası yalnızca Render'ın maskeli ortam değişkeninde tutulur.
+- Lead listesi rol tabanlı oturumla korunur; dashboard yanıtları önbelleğe alınmaz.
+- Form tabanlı oturum işlemleri CSRF belirteciyle doğrulanır.
 - `.env` GitHub'a yüklenmez.
 - SQLAlchemy Core tüm kullanıcı verilerini bağlı parametrelerle sorgular.
 - Veritabanı ve AI servis hataları güvenli HTTP/JSON yanıtlarına çevrilir.

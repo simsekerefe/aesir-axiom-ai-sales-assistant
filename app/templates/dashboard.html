@@ -1,1 +1,122 @@
-<!-- Reserved for the AESIR AXIOM management interface in Module G. -->
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ASGARDIAN Control / Lead Yönetimi</title>
+  <style>
+    :root { color-scheme:dark; --bg:#0f141d; --blue:#1e3a4d; --steel:#6e7d8a; --gold:#d4af37; --white:#f5f7fa; --muted:#c9d1d8; --line:rgba(110,125,138,.32); }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--white); font:14px/1.5 Inter,ui-sans-serif,system-ui,sans-serif; }
+    header { min-height:74px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:0 clamp(20px,4vw,64px); border-bottom:1px solid var(--line); background:rgba(15,20,29,.94); position:sticky; top:0; z-index:5; }
+    .brand { display:flex; align-items:baseline; gap:14px; }
+    .brand strong { font:400 21px Georgia,serif; letter-spacing:.08em; }
+    .brand span,.meta { color:var(--steel); font:11px ui-monospace,monospace; letter-spacing:.1em; }
+    .session { display:flex; align-items:center; gap:14px; }
+    .logout { border:1px solid var(--line); background:transparent; color:var(--white); padding:9px 13px; cursor:pointer; }
+    .logout:hover,.logout:focus-visible { border-color:var(--gold); }
+    main { width:min(1500px,94vw); margin:clamp(30px,6vw,80px) auto; }
+    .intro { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:28px; align-items:end; margin-bottom:34px; }
+    h1 { margin:.5rem 0 0; font:400 clamp(36px,6vw,70px)/1 Georgia,serif; letter-spacing:.02em; }
+    .count { font:400 clamp(46px,7vw,84px)/.9 ui-monospace,monospace; color:var(--gold); text-align:right; }
+    .count small { display:block; margin-top:12px; color:var(--steel); font-size:10px; letter-spacing:.14em; }
+    .controls { display:flex; gap:12px; flex-wrap:wrap; padding:18px; border:1px solid var(--line); border-bottom:0; background:rgba(30,58,77,.18); }
+    .search { flex:1 1 300px; min-height:44px; border:1px solid var(--line); border-radius:2px; background:#0b1017; color:var(--white); padding:0 14px; }
+    .search:focus { outline:2px solid rgba(212,175,55,.38); border-color:var(--gold); }
+    .refresh { min-height:44px; padding:0 18px; border:1px solid var(--gold); background:transparent; color:var(--gold); cursor:pointer; }
+    .table-wrap { overflow:auto; border:1px solid var(--line); }
+    table { width:100%; min-width:860px; border-collapse:collapse; }
+    th { color:var(--steel); font:600 10px ui-monospace,monospace; letter-spacing:.12em; text-align:left; text-transform:uppercase; background:#101720; }
+    th,td { padding:16px 18px; border-bottom:1px solid var(--line); vertical-align:top; }
+    tbody tr:hover { background:rgba(30,58,77,.2); }
+    td:first-child { color:var(--gold); font-family:ui-monospace,monospace; }
+    .empty,.status { padding:34px; border:1px solid var(--line); color:var(--muted); text-align:center; }
+    .error { color:#ffd7d3; border-color:#9e514d; }
+    [hidden] { display:none!important; }
+    @media (max-width:700px) { header { align-items:flex-start; padding-block:18px; } .brand,.session { flex-direction:column; align-items:flex-start; gap:4px; } .intro { grid-template-columns:1fr; } .count { text-align:left; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><strong>AESIR AXIOM</strong><span>ASGARDIAN CONTROL</span></div>
+    <div class="session">
+      <span class="meta">ROLE / EMPLOYEE · {{ employee }}</span>
+      <form method="post" action="{{ url_for('pages.dashboard_logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="logout" type="submit">Oturumu Kapat</button>
+      </form>
+    </div>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div><div class="meta">INTELLIGENCE LAYER / LEAD OPERATIONS</div><h1 id="page-title">Müşteri Adayları</h1></div>
+      <div class="count"><span id="lead-count">—</span><small>TOPLAM KAYIT</small></div>
+    </section>
+    {% if page_error %}<div class="status error" role="alert">{{ page_error }}</div>{% endif %}
+    <div class="controls">
+      <label for="lead-search" class="meta">KAYITLARDA ARA</label>
+      <input id="lead-search" class="search" type="search" placeholder="İsim, telefon veya mesaj" autocomplete="off">
+      <button id="refresh" class="refresh" type="button">Yenile</button>
+    </div>
+    <div id="loading" class="status" role="status">Kayıtlar güvenli API üzerinden alınıyor…</div>
+    <div id="error" class="status error" role="alert" hidden></div>
+    <div id="empty" class="empty" hidden>Henüz müşteri adayı kaydı yok.</div>
+    <div id="table-wrap" class="table-wrap" hidden>
+      <table>
+        <thead><tr><th>ID</th><th>İsim</th><th>Telefon</th><th>Mesaj / İhtiyaç</th><th>Tarih</th></tr></thead>
+        <tbody id="lead-rows"></tbody>
+      </table>
+    </div>
+  </main>
+  <script>
+    const state = { leads: [] };
+    const rows = document.getElementById('lead-rows');
+    const count = document.getElementById('lead-count');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const empty = document.getElementById('empty');
+    const table = document.getElementById('table-wrap');
+    const search = document.getElementById('lead-search');
+
+    function textCell(value) {
+      const cell = document.createElement('td');
+      cell.textContent = value == null || value === '' ? '—' : String(value);
+      return cell;
+    }
+
+    function render() {
+      const term = search.value.trim().toLocaleLowerCase('tr');
+      const filtered = state.leads.filter((lead) => [lead.isim, lead.telefon, lead.mesaj]
+        .some((value) => String(value || '').toLocaleLowerCase('tr').includes(term)));
+      rows.replaceChildren();
+      for (const lead of filtered) {
+        const row = document.createElement('tr');
+        row.append(textCell(lead.id), textCell(lead.isim), textCell(lead.telefon), textCell(lead.mesaj), textCell(new Date(lead.tarih).toLocaleString('tr-TR')));
+        rows.appendChild(row);
+      }
+      count.textContent = state.leads.length;
+      empty.hidden = filtered.length !== 0;
+      table.hidden = filtered.length === 0;
+    }
+
+    async function loadLeads() {
+      loading.hidden = false; error.hidden = true; empty.hidden = true; table.hidden = true;
+      try {
+        const response = await fetch('/api/leads', { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+        const data = await response.json();
+        if (response.status === 401) { window.location.assign('/dashboard/login'); return; }
+        if (!response.ok || !data.basari || !Array.isArray(data.leadler)) throw new Error(data.hata || 'Kayıtlar alınamadı.');
+        state.leads = data.leadler; render();
+      } catch (reason) {
+        error.textContent = reason instanceof Error ? reason.message : 'Beklenmeyen bir hata oluştu.';
+        error.hidden = false;
+      } finally { loading.hidden = true; }
+    }
+
+    search.addEventListener('input', render);
+    document.getElementById('refresh').addEventListener('click', loadLeads);
+    loadLeads();
+  </script>
+</body>
+</html>

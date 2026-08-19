@@ -22,6 +22,10 @@ services:
         value: openai/gpt-oss-20b
       - key: GROQ_API_KEY
         sync: false
+      - key: ASGARDIAN_EMPLOYEE_USERNAME
+        value: operator
+      - key: ASGARDIAN_EMPLOYEE_PASSWORD
+        sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
