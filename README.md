@@ -91,7 +91,8 @@ GET /health
 ## API Uç Noktaları
 
 ### `GET /health`
-Sunucunun ve veritabanı bağlantısının aktif olduğunu doğrular.
+Sunucunun ve veritabanı bağlantısının aktif olduğunu doğrular; hassas bağlantı
+bilgilerini açığa çıkarmadan etkin SQL altyapısını bildirir.
 
 ### `POST /api/sohbet`
 Örnek istek:

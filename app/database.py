@@ -113,6 +113,11 @@ def database_is_ready() -> bool:
     return True
 
 
+def database_backend() -> str:
+    """Return the active SQL dialect without exposing connection details."""
+    return get_engine().dialect.name
+
+
 def lead_ekle(isim, telefon, mesaj=None):
     """Store a lead and return its generated row id."""
     if not isim or not telefon:

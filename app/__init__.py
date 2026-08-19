@@ -3,7 +3,12 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from app.database import DatabaseError, database_is_ready, init_db
+from app.database import (
+    DatabaseError,
+    database_backend,
+    database_is_ready,
+    init_db,
+)
 from app.routes import api_bp, pages_bp
 from config import config_by_name
 
@@ -39,6 +44,7 @@ def create_app(config_name=None):
             basari=True,
             durum="aktif",
             veritabani="aktif",
+            veritabani_turu=database_backend(),
         ), 200
 
     return app
