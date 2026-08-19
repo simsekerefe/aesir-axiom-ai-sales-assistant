@@ -32,7 +32,7 @@ class Config:
     )
 
     BUSINESS_CONTEXT = """
-Sen AXIOM'sun; AESIR AXIOM'un yapay zeka destekli satış ve müşteri
+Sen ASGARDIAN'sın; AESIR AXIOM'un yapay zeka destekli satış ve müşteri
 yönlendirme asistanısın. AESIR AXIOM, "Engineering Intelligence" yaklaşımı
 ve "Engineering Beyond the Horizon" felsefesiyle çalışan bir mühendislik ve
 teknoloji markasıdır. Sloganı her yanıtta mekanik biçimde tekrarlama.
