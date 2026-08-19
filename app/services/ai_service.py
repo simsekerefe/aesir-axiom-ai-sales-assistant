@@ -8,7 +8,6 @@ class AIServiceError(Exception):
 
 class AIService:
     GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
-    MODEL = "llama-3.1-8b-instant"
     TIMEOUT = 30
 
     def yanit_uret(self, mesaj, gecmis=None):
@@ -21,13 +20,17 @@ class AIService:
         api_key = str(current_app.config.get("GROQ_API_KEY", "")).strip()
         if not api_key:
             return (
-                "AXIOM şu anda demo modunda çalışıyor. "
+                "ASGARDIAN şu anda demo modunda çalışıyor. "
                 "Yapay zekâ hizmetini etkinleştirmek için Groq API anahtarı "
                 "yapılandırılmalıdır."
             )
 
+        model = str(current_app.config.get("AI_MODEL", "")).strip()
+        if not model:
+            raise AIServiceError("Yapay zeka modeli yapılandırılmamış.")
+
         messages = self._build_messages(mesaj, gecmis)
-        return self._call_groq(api_key, messages)
+        return self._call_groq(api_key, model, messages)
 
     def _get_system_prompt(self):
         prompt = current_app.config.get("BUSINESS_CONTEXT", "")
@@ -67,13 +70,13 @@ class AIService:
         messages.append({"role": "user", "content": mesaj})
         return messages
 
-    def _call_groq(self, api_key, messages):
+    def _call_groq(self, api_key, model, messages):
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
         }
         payload = {
-            "model": self.MODEL,
+            "model": model,
             "messages": messages,
             "temperature": 0.3,
         }

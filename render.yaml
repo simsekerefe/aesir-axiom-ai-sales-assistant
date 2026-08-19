@@ -11,6 +11,8 @@ services:
         value: production
       - key: AI_PROVIDER
         value: groq
+      - key: AI_MODEL
+        value: openai/gpt-oss-20b
       - key: GROQ_API_KEY
         sync: false
       - key: SECRET_KEY

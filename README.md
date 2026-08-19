@@ -8,7 +8,7 @@ AXIOM AI Sales Assistant, AESIR AXIOM markası için geliştirilen modüler bir 
 - Flask
 - Flask-CORS
 - SQLite
-- Groq API (`llama-3.1-8b-instant`)
+- Groq API (varsayılan model: `openai/gpt-oss-20b`)
 - python-dotenv
 - requests
 - gunicorn
@@ -67,6 +67,7 @@ pip install -r requirements.txt
 SECRET_KEY=
 DATABASE_URL=aesir_axiom_leads.db
 AI_PROVIDER=groq
+AI_MODEL=openai/gpt-oss-20b
 GROQ_API_KEY=
 CORS_ORIGINS=http://localhost:5000
 FLASK_ENV=development
@@ -128,6 +129,7 @@ Render ortam değişkenlerine en az aşağıdaki değerleri ekleyin:
 
 - `FLASK_ENV=production`
 - `AI_PROVIDER=groq`
+- `AI_MODEL=openai/gpt-oss-20b`
 - `GROQ_API_KEY`
 - `SECRET_KEY`
 - `DATABASE_URL`

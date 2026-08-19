@@ -27,6 +27,7 @@ class Config:
         "aesir_axiom_leads.db",
     )
     AI_PROVIDER = os.environ.get("AI_PROVIDER", "groq")
+    AI_MODEL = os.environ.get("AI_MODEL", "openai/gpt-oss-20b")
     CORS_ORIGINS = _parse_cors_origins(
         os.environ.get("CORS_ORIGINS", "http://localhost:5000")
     )
