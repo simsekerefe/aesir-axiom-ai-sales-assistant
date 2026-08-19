@@ -24,7 +24,7 @@ class Config:
 
     DATABASE_URL = os.environ.get(
         "DATABASE_URL",
-        "aesir_axiom_leads.db",
+        "sqlite:///aesir_axiom_leads.db",
     )
     AI_PROVIDER = os.environ.get("AI_PROVIDER", "groq")
     AI_MODEL = os.environ.get("AI_MODEL", "openai/gpt-oss-20b")

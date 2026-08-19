@@ -3,7 +3,7 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from app.database import init_db
+from app.database import DatabaseError, database_is_ready, init_db
 from app.routes import api_bp, pages_bp
 from config import config_by_name
 
@@ -26,6 +26,19 @@ def create_app(config_name=None):
 
     @app.get("/health")
     def health():
-        return jsonify(basari=True, durum="aktif"), 200
+        try:
+            database_is_ready()
+        except DatabaseError:
+            return jsonify(
+                basari=False,
+                durum="hata",
+                veritabani="erisilemiyor",
+            ), 503
+
+        return jsonify(
+            basari=True,
+            durum="aktif",
+            veritabani="aktif",
+        ), 200
 
     return app

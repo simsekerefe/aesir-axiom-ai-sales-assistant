@@ -1,8 +1,6 @@
-import sqlite3
-
 from flask import Blueprint, jsonify, render_template, request
 
-from app.database import lead_ekle, tum_leadler
+from app.database import DatabaseError, lead_ekle, tum_leadler
 from app.services.ai_service import AIServiceError, ai_service
 
 
@@ -91,7 +89,7 @@ def lead_olustur():
             basari=False,
             hata="İsim ve telefon alanları zorunludur.",
         ), 400
-    except sqlite3.Error:
+    except DatabaseError:
         return jsonify(
             basari=False,
             hata="Kayıt işlemi şu anda tamamlanamadı.",
@@ -104,7 +102,7 @@ def lead_olustur():
 def leadleri_listele():
     try:
         leadler = tum_leadler()
-    except sqlite3.Error:
+    except DatabaseError:
         return jsonify(
             basari=False,
             hata="Kayıtlar şu anda alınamıyor.",

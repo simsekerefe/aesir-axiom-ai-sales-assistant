@@ -1,13 +1,14 @@
-# AESIR AXIOM — AXIOM AI Sales Assistant
+# AESIR AXIOM — ASGARDIAN AI Sales Assistant
 
-AXIOM AI Sales Assistant, AESIR AXIOM markası için geliştirilen modüler bir Flask backend uygulamasıdır. Kullanıcı mesajlarını yapay zekâ servisine iletir, yanıt üretir ve müşteri adayı (lead) bilgilerini SQLite veritabanında saklar.
+ASGARDIAN, AESIR AXIOM markası için geliştirilen modüler bir Flask backend uygulamasıdır. Kullanıcı mesajlarını yapay zekâ servisine iletir, yanıt üretir ve müşteri adayı (lead) bilgilerini üretimde PostgreSQL veritabanında kalıcı olarak saklar. Yerel geliştirmede SQLite kullanılabilir.
 
 ## Teknoloji Yığını
 
 - Python 3.9+
 - Flask
 - Flask-CORS
-- SQLite
+- PostgreSQL (üretim) / SQLite (yerel geliştirme)
+- SQLAlchemy 2
 - Groq API (varsayılan model: `openai/gpt-oss-20b`)
 - python-dotenv
 - requests
@@ -38,7 +39,7 @@ aesir-axiom-ai-sales-assistant/
 ```
 
 - `config.py`: ortam değişkenleri ve uygulama yapılandırması
-- `app/database.py`: tüm SQLite işlemleri
+- `app/database.py`: PostgreSQL/SQLite bağlantısı ve tüm veri işlemleri
 - `app/routes.py`: HTTP rotaları ve istek doğrulama
 - `app/services/ai_service.py`: tüm yapay zekâ sağlayıcı çağrıları
 - `app/__init__.py`: `create_app()` uygulama fabrikası
@@ -65,7 +66,7 @@ pip install -r requirements.txt
 
 ```env
 SECRET_KEY=
-DATABASE_URL=aesir_axiom_leads.db
+DATABASE_URL=sqlite:///aesir_axiom_leads.db
 AI_PROVIDER=groq
 AI_MODEL=openai/gpt-oss-20b
 GROQ_API_KEY=
@@ -90,7 +91,7 @@ GET /health
 ## API Uç Noktaları
 
 ### `GET /health`
-Sunucunun aktif olduğunu doğrular.
+Sunucunun ve veritabanı bağlantısının aktif olduğunu doğrular.
 
 ### `POST /api/sohbet`
 Örnek istek:
@@ -125,7 +126,9 @@ Build Command: pip install -r requirements.txt
 Start Command: gunicorn run:app
 ```
 
-Render ortam değişkenlerine en az aşağıdaki değerleri ekleyin:
+`render.yaml`, ücretsiz Render Postgres kaynağını oluşturur ve dahili bağlantı
+adresini `DATABASE_URL` değişkenine bağlar. Render ortam değişkenlerinde ayrıca
+en az aşağıdaki değerler bulunmalıdır:
 
 - `FLASK_ENV=production`
 - `AI_PROVIDER=groq`
@@ -145,7 +148,7 @@ https://<render-servis-adresi>/health
 
 - API anahtarları kaynak kodda tutulmaz.
 - `.env` GitHub'a yüklenmez.
-- SQL sorgularında kullanıcı verileri `?` placeholder ile parametrelenir.
+- SQLAlchemy Core tüm kullanıcı verilerini bağlı parametrelerle sorgular.
 - Veritabanı ve AI servis hataları güvenli HTTP/JSON yanıtlarına çevrilir.
 - SQL yalnızca `database.py`, AI sağlayıcı çağrıları yalnızca `ai_service.py` içinde bulunur.
 
