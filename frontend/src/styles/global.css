@@ -1,0 +1,440 @@
+/* AESIR AXIOM centralized design tokens and shared interface primitives. */
+
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #0F141D;
+  --color-paper-warm: #1E3A4D;
+  --color-ink: #F5F7FA;
+  --color-ink-soft: #C9D1D8;
+  --color-mute: #6E7D8A;
+  --color-rule: #3A4A57;
+  --color-accent: #D4AF37;
+  --color-accent-soft: #A9892B;
+  --color-cream: #F5F7FA;
+  --color-error: #D97A74;
+
+  --font-display: "Marcellus", serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --spacing-2xs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.25rem;
+  --spacing-2xl: 3.5rem;
+  --spacing-3xl: 5.5rem;
+  --spacing-4xl: 8.5rem;
+
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --container-prose: 42rem;
+  --container-md: 48rem;
+  --container-3xl: 72rem;
+  --container-6xl: 88rem;
+}
+
+/* Reading-width helper so prose pages center without guessing Tailwind sizes. */
+@utility container-reading {
+  max-width: var(--container-prose);
+  margin-inline: auto;
+}
+
+/* Shared button primitive — declared with @utility so the variants below can
+   @apply it (a plain contract class is NOT @apply-able in Tailwind v4). */
+@utility btn {
+  @apply inline-flex items-center justify-center px-lg py-md rounded-md font-medium;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    line-height: 1.15;
+    margin: 0;
+  }
+  p {
+    margin: 0;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+  input, textarea, select {
+    font: inherit;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  ul, ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+/* ── Button family — used on every page in every vertical ─────────────────── */
+.btn-primary {
+  @apply btn;
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-accent);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-secondary {
+  @apply btn;
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule);
+}
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-ghost {
+  @apply btn;
+  background: transparent;
+  color: var(--color-ink);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--color-paper-warm);
+}
+.btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Cross-cutting decorative patterns ────────────────────────────────────── */
+[data-decorative-slot] {
+  position: relative;
+  overflow: hidden;
+}
+[data-decorative-slot] > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.editorial-rule {
+  border: 0;
+  height: 1px;
+  background: var(--color-accent);
+  opacity: 0.6;
+  margin-block: var(--spacing-lg);
+}
+
+/* ── Universal site chrome ────────────────────────────────────────────────── */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--color-paper) 88%, transparent);
+  backdrop-filter: saturate(1.1) blur(8px);
+  border-bottom: 1px solid var(--color-rule);
+}
+.site-footer {
+  border-top: 1px solid var(--color-rule);
+  background: var(--color-paper-warm);
+  color: var(--color-mute);
+}
+
+/* ── View Transitions wiring (paired with Layout.astro <script>) ──────────────
+   Disable the default ClientRouter root cross-fade; the progress bar + grid-dim
+   carry navigation feedback instead. Do not split into a separate file. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-accent, currentColor);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+}
+.nav-progress[data-state="loading"] {
+  opacity: 1;
+  transform: scaleX(0.85);
+  transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 120ms ease;
+}
+.nav-progress[data-state="done"] {
+  opacity: 0;
+  transform: scaleX(1);
+  transition: transform 200ms ease, opacity 240ms ease 60ms;
+}
+
+/* ── AESIR AXIOM shell extensions ───────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.site-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  background: var(--color-paper);
+  transition: opacity 420ms ease, visibility 420ms ease;
+}
+.site-loader[data-state="complete"] {
+  opacity: 0;
+  visibility: hidden;
+}
+.site-ready .site-loader {
+  display: none;
+}
+.site-loader-mark {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--spacing-md);
+  color: var(--color-ink-soft);
+  font: 0.6875rem/1.3 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.site-loader-mark img {
+  width: 7rem;
+  height: auto;
+  filter: drop-shadow(0 0 1.5rem color-mix(in srgb, var(--color-accent) 12%, transparent));
+}
+.site-loader-geometry {
+  position: absolute;
+  inset: -3rem;
+  border: 1px solid color-mix(in srgb, var(--color-rule) 55%, transparent);
+  transform: rotate(45deg);
+}
+.site-loader-geometry::before,
+.site-loader-geometry::after {
+  content: "";
+  position: absolute;
+  background: color-mix(in srgb, var(--color-accent) 50%, transparent);
+}
+.site-loader-geometry::before {
+  top: 50%;
+  right: -2rem;
+  left: -2rem;
+  height: 1px;
+}
+.site-loader-geometry::after {
+  top: -2rem;
+  bottom: -2rem;
+  left: 50%;
+  width: 1px;
+}
+.site-loader-progress {
+  width: 9rem;
+  height: 1px;
+  overflow: hidden;
+  background: var(--color-rule);
+}
+.site-loader-progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: loader-progress 780ms cubic-bezier(.65, 0, .35, 1) forwards;
+}
+@keyframes loader-progress {
+  to { transform: scaleX(1); }
+}
+.site-nav {
+  background: color-mix(in srgb, var(--color-paper) 94%, transparent);
+}
+.nav-brand,
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+.nav-brand img,
+.footer-brand img {
+  height: auto;
+}
+.nav-brand img {
+  width: 2.75rem;
+}
+.footer-brand img {
+  width: 4.5rem;
+}
+.nav-brand span {
+  padding-left: var(--spacing-sm);
+  border-left: 1px solid var(--color-rule);
+  color: var(--color-ink-soft);
+  font: 0.625rem/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.nav-wordmark strong,
+.footer-brand strong {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+.nav-wordmark small,
+.footer-brand small {
+  color: var(--color-mute);
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.nav-wordmark,
+.footer-brand > span {
+  display: grid;
+  gap: 0.3rem;
+}
+.footer-brand > span {
+  padding-left: var(--spacing-md);
+  border-left: 1px solid var(--color-rule);
+}
+.nav-toggle {
+  display: none;
+  padding: var(--spacing-xs);
+  color: var(--color-ink);
+  background: transparent;
+  border: 0;
+}
+.nav-panel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+.locale-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-left: var(--spacing-md);
+  border-left: 1px solid var(--color-rule);
+  color: var(--color-mute);
+  font: 0.625rem/1 var(--font-mono);
+  letter-spacing: 0.1em;
+}
+.locale-switch a {
+  color: var(--color-mute);
+  transition: color 160ms ease;
+}
+.locale-switch a:hover,
+.locale-switch a:focus-visible,
+.locale-switch a[aria-current="true"] {
+  color: var(--color-accent);
+}
+.site-nav-item a,
+.site-footer a {
+  color: var(--color-ink-soft);
+  transition: color 180ms ease;
+}
+.site-nav-item a:hover,
+.site-footer a:hover {
+  color: var(--color-accent);
+}
+.site-footer {
+  background: #0c1118;
+}
+.footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-rule);
+}
+.footer-meta > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+.footer-meta span {
+  color: var(--color-mute);
+}
+
+@media (max-width: 767px) {
+  .nav-brand span { display: none; }
+  .nav-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .nav-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--color-paper);
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .nav-panel.is-open { display: flex; }
+  .nav-panel ul { gap: var(--spacing-md); }
+  .locale-switch {
+    justify-content: flex-start;
+    padding: var(--spacing-md) 0 0;
+    border-top: 1px solid var(--color-rule);
+    border-left: 0;
+  }
+  .footer-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .site-loader { display: none; }
+}

@@ -1,0 +1,96 @@
+---
+import type { SiteSettings } from "../lib/cms";
+import { resolveWixImageUrl } from "../utils/wix-image";
+
+type Locale = "en" | "tr";
+
+interface Props {
+  locale?: Locale;
+  settings?: SiteSettings;
+}
+
+const { locale = "en", settings } = Astro.props;
+const isTurkish = locale === "tr";
+const home = isTurkish ? "/tr/" : "/";
+const base = isTurkish ? "/tr" : "";
+const year = new Date().getFullYear();
+const fallbackCopy = isTurkish
+  ? {
+      identifier: "Mühendislik Zekâsı",
+      slogan: "Ufkun Ötesinde Mühendislik",
+      home: "Ana Sayfa",
+      about: "Hakkımızda",
+      capabilities: "Yetkinlikler",
+      technology: "Teknoloji",
+      projects: "Projeler",
+      research: "Araştırma",
+      faq: "SSS",
+      contact: "İletişim",
+      rights: "Tüm hakları saklıdır.",
+      legal: "Yasal ve sosyal bağlantılar",
+      privacy: "Gizlilik",
+      privacyTitle: "Gizlilik bildirimini okuyun",
+      terms: "Koşullar",
+      termsTitle: "Kullanım koşullarını okuyun",
+      homeLabel: "AESIR AXIOM ana sayfa",
+    }
+  : {
+      identifier: "Engineering Intelligence",
+      slogan: "Engineering Beyond the Horizon",
+      home: "Home",
+      about: "About",
+      capabilities: "Capabilities",
+      technology: "Technology",
+      projects: "Projects",
+      research: "Research",
+      faq: "FAQ",
+      contact: "Contact",
+      rights: "All rights reserved.",
+      legal: "Legal and social links",
+      privacy: "Privacy",
+      privacyTitle: "Read the privacy notice",
+      terms: "Terms",
+      termsTitle: "Read the terms of use",
+      homeLabel: "AESIR AXIOM home",
+    };
+const copy = {
+  ...fallbackCopy,
+  identifier: settings?.brandIdentifier || fallbackCopy.identifier,
+  slogan: settings?.slogan || fallbackCopy.slogan,
+  contact: settings?.contactLabel || fallbackCopy.contact,
+};
+const brandName = settings?.brandName || "AESIR AXIOM";
+const emblemUrl = resolveWixImageUrl(settings?.emblem, 128, 128) || "/assets/aesir-axiom-emblem.png";
+---
+<footer class="site-footer">
+  <div class="max-w-6xl mx-auto px-lg py-3xl flex flex-col md:flex-row md:items-start md:justify-between gap-xl">
+    <div class="flex flex-col gap-sm max-w-prose">
+      <a href={home} class="footer-brand" aria-label={copy.homeLabel}>
+        <img src={emblemUrl} alt="" width="64" height="64" loading="lazy" />
+        <span><strong>{brandName}</strong><small>{copy.identifier}</small></span>
+      </a>
+      <p class="text-sm">{copy.slogan}</p>
+    </div>
+    <nav>
+      <ul class="flex flex-col gap-sm text-sm">
+        <li><a href={home}>{copy.home}</a></li>
+        <li><a href={`${base}/about`}>{copy.about}</a></li>
+        <li><a href={`${home}#capabilities`}>{copy.capabilities}</a></li>
+        <li><a href={`${home}#technology`}>{copy.technology}</a></li>
+        <li><a href={`${home}#projects`}>{copy.projects}</a></li>
+        <li><a href={`${home}#research`}>{copy.research}</a></li>
+        <li><a href={`${base}/faq`}>{copy.faq}</a></li>
+        <li><a href={`${base}/contact`}>{copy.contact}</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="max-w-6xl mx-auto px-lg pb-xl text-xs">
+    <div class="footer-meta">
+      <p>© {year} {brandName}. {copy.rights}</p>
+      <div aria-label={copy.legal}>
+        <a href={`${base}/privacy`} title={copy.privacyTitle}>{copy.privacy}</a>
+        <a href={`${base}/terms`} title={copy.termsTitle}>{copy.terms}</a>
+      </div>
+    </div>
+  </div>
+</footer>

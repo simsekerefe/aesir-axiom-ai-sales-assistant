@@ -1,0 +1,41 @@
+{
+  "name": "aesir-axiom-corporate-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AESIR AXIOM bilingual engineering website and ASGARDIAN frontend integration.",
+  "scripts": {
+    "astro": "astro",
+    "dev": "wix dev",
+    "build": "wix build",
+    "wix": "wix",
+    "preview": "wix preview",
+    "release": "wix release",
+    "generate": "wix generate",
+    "env": "wix env",
+    "skills": "wix skills",
+    "audit": "node scripts/jury-audit.mjs",
+    "verify": "npm run audit && npm run build"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@wix/astro": "^2.39.0",
+    "@wix/astro-pages": "^2.0.4",
+    "@wix/essentials": "^1.0.14",
+    "@wix/forms": "^1.0.499",
+    "@wix/sdk": "^1.21.16",
+    "@wix/wix-data-items-sdk": "^1.0.547",
+    "astro": "^5.8.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@astrojs/react": "^4.3.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@wix/astro-wix-hosting-adapter": "^2.0.0",
+    "@wix/cli": "^1.1.92",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

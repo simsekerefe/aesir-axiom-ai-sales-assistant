@@ -1,0 +1,174 @@
+---
+import ContactForm from "../components/ContactForm.tsx";
+import Layout from "../layouts/Layout.astro";
+import { getPageContent } from "../lib/cms";
+
+type Locale = "en" | "tr";
+interface Props { locale?: Locale; }
+const { locale = "en" } = Astro.props;
+const isTurkish = locale === "tr";
+const fallbackCopy = isTurkish
+  ? {
+      title: "İletişim",
+      description: "İleri mühendislik, akıllı sistemler ve uygulamalı araştırma hakkında AESIR AXIOM ile teknik bir görüşme başlatın.",
+      eyebrow: "08 / İletişim",
+      heading: "Teknik bir görüşme başlatın.",
+      introduction: "Zorluğu, kısıtları ve hedef ufkunu birlikte görünür kılalım. Karmaşık teknik sorulardan güvenilir sistemlere uzanan yolu tanımlamanıza yardımcı olalım.",
+      channel: "Talep kanalı",
+      formHeading: "Sırada ne olduğunu anlatın.",
+      context: "Çalışma bağlamı",
+      contextHeading: "Sonuç üreten çalışmalar için tasarlandı.",
+      contextBody: "Mühendislik muhakemesi, akıllı sistemler ve uygulamalı araştırmanın tek bir tutarlı bütün olarak çalışması gereken alanlarda devreye gireriz.",
+      identifier: "AESIR AXIOM / Mühendislik zekâsı",
+      ctaHeading: "Ufkun Ötesini Birlikte İnşa Edelim",
+      ctaBody: "Mühendislik problemleri geleneksel çözümlerden fazlasını gerektirir. Sırada ne varsa birlikte inşa edelim.",
+      returnLink: "Talep formuna dönün",
+    }
+  : {
+      title: "Contact",
+      description: "Start a technical conversation with AESIR AXIOM about advanced engineering, intelligent systems, and applied research.",
+      eyebrow: "08 / Contact",
+      heading: "Begin a technical conversation.",
+      introduction: "Bring the challenge, constraints, and horizon into view. We will help define a path from complex technical questions to dependable systems.",
+      channel: "Inquiry channel",
+      formHeading: "Tell us what comes next.",
+      context: "Working context",
+      contextHeading: "Designed for consequential work.",
+      contextBody: "We engage where engineering judgment, intelligent systems, and applied research need to operate as one coherent whole.",
+      identifier: "AESIR AXIOM / Engineering intelligence",
+      ctaHeading: "Build Beyond the Horizon",
+      ctaBody: "Engineering challenges require more than conventional solutions. Let's build what comes next.",
+      returnLink: "Return to the inquiry form",
+    };
+
+const pageContent = await getPageContent('contact', locale);
+const section = (sectionKey: string) => pageContent.sections.find((item) => item.sectionKey === sectionKey);
+const heroSection = section('hero');
+const formSection = section('form');
+const contextSection = section('context');
+const ctaSection = section('cta');
+const copy = {
+  ...fallbackCopy,
+  eyebrow: heroSection?.eyebrow || fallbackCopy.eyebrow,
+  heading: heroSection?.title || fallbackCopy.heading,
+  introduction: heroSection?.body || fallbackCopy.introduction,
+  channel: formSection?.eyebrow || fallbackCopy.channel,
+  formHeading: formSection?.title || fallbackCopy.formHeading,
+  context: contextSection?.eyebrow || fallbackCopy.context,
+  contextHeading: contextSection?.title || fallbackCopy.contextHeading,
+  contextBody: contextSection?.body || fallbackCopy.contextBody,
+  identifier: ctaSection?.eyebrow || fallbackCopy.identifier,
+  ctaHeading: ctaSection?.title || fallbackCopy.ctaHeading,
+  ctaBody: ctaSection?.body || fallbackCopy.ctaBody,
+  returnLink: ctaSection?.ctaLabel || fallbackCopy.returnLink,
+};
+
+const SEEDED_FORM_ID = "0fb02e34-858a-45e7-80aa-cc9a17ed141f";
+const formFields = [
+  { label: isTurkish ? "Ad Soyad" : "Name", target: "name_0001", required: true, componentType: "TEXT_INPUT", identifier: "CONTACTS_FIRST_NAME" },
+  { label: isTurkish ? "Şirket" : "Company", target: "company_0002", required: false, componentType: "TEXT_INPUT", identifier: "TEXT_INPUT" },
+  { label: isTurkish ? "E-posta" : "Email", target: "email_0003", required: true, componentType: "TEXT_INPUT", identifier: "CONTACTS_EMAIL" },
+  { label: isTurkish ? "Telefon" : "Phone", target: "phone_0006", required: true, componentType: "TEXT_INPUT", identifier: "CONTACTS_PHONE" },
+  { label: isTurkish ? "Proje Türü" : "Project Type", target: "project_type_0004", required: true, componentType: "TEXT_INPUT", identifier: "TEXT_INPUT" },
+  { label: isTurkish ? "Mesaj" : "Message", target: "message_0005", required: true, componentType: "TEXT_INPUT", identifier: "TEXT_INPUT" },
+];
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+>
+  <section class="contact-hero relative overflow-hidden border-b border-rule" aria-labelledby="contact-heading">
+    <div class="contact-grid" aria-hidden="true"></div>
+    <div class="relative mx-auto grid w-[min(100%-3rem,var(--container-6xl))] gap-2xl py-3xl lg:grid-cols-[minmax(0,0.82fr)_minmax(24rem,1.18fr)] lg:gap-4xl lg:py-4xl">
+      <div class="flex flex-col justify-between gap-2xl">
+        <div>
+          <p class="mb-lg font-mono text-[0.7rem] uppercase tracking-[0.16em] text-accent">{copy.eyebrow}</p>
+          <h1 id="contact-heading" class="max-w-[11ch] font-display text-[clamp(3.25rem,7vw,7.25rem)] leading-[0.94] tracking-[-0.045em] text-ink">{copy.heading}</h1>
+        </div>
+        <p class="max-w-prose text-lg leading-8 text-ink-soft">{copy.introduction}</p>
+      </div>
+
+      <div class="contact-panel border border-rule bg-paper/70 p-lg sm:p-2xl">
+        <div class="mb-2xl flex items-start justify-between gap-lg border-b border-rule pb-lg">
+          <div>
+            <p class="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-accent">{copy.channel}</p>
+            <h2 class="mt-sm font-display text-3xl text-ink">{copy.formHeading}</h2>
+          </div>
+          <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+        </div>
+
+        <ContactForm client:load formId={SEEDED_FORM_ID} fields={formFields} locale={locale} />
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b border-rule bg-paper-warm" aria-labelledby="focus-heading">
+    <div class="mx-auto grid w-[min(100%-3rem,var(--container-6xl))] gap-xl py-2xl md:grid-cols-[0.8fr_1.2fr] md:items-end">
+      <div>
+        <p class="mb-md font-mono text-[0.7rem] uppercase tracking-[0.16em] text-accent">{copy.context}</p>
+        <h2 id="focus-heading" class="max-w-[13ch] font-display text-[clamp(2.25rem,4vw,4.25rem)] leading-[1] tracking-[-0.035em]">{copy.contextHeading}</h2>
+      </div>
+      <p class="max-w-[40rem] text-lg leading-8 text-ink-soft">{copy.contextBody}</p>
+    </div>
+  </section>
+
+  <section class="relative overflow-hidden bg-paper" aria-labelledby="cta-heading">
+    <div class="contact-axis" aria-hidden="true"></div>
+    <div class="relative mx-auto grid min-h-[28rem] w-[min(100%-3rem,var(--container-6xl))] content-center py-3xl md:min-h-[34rem] md:py-4xl">
+      <p class="mb-lg font-mono text-[0.7rem] uppercase tracking-[0.16em] text-accent">{copy.identifier}</p>
+      <h2 id="cta-heading" class="max-w-[12ch] font-display text-[clamp(3rem,7vw,7rem)] leading-[0.95] tracking-[-0.045em]">{copy.ctaHeading}</h2>
+      <p class="mt-xl max-w-prose text-lg leading-8 text-ink-soft">{copy.ctaBody}</p>
+      <a class="mt-2xl inline-flex w-fit items-center gap-sm border-b border-accent pb-sm font-mono text-[0.72rem] uppercase tracking-[0.13em] text-ink transition-colors hover:text-accent focus-visible:text-accent" href="#contact-heading">
+        {copy.returnLink} <span aria-hidden="true">↑</span>
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .contact-hero {
+    background:
+      radial-gradient(circle at 88% 15%, color-mix(in srgb, var(--color-paper-warm) 78%, transparent), transparent 30rem),
+      var(--color-paper);
+  }
+
+  .contact-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.2;
+    background-image:
+      linear-gradient(var(--color-rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-rule) 1px, transparent 1px);
+    background-size: 7rem 7rem;
+    mask-image: linear-gradient(90deg, transparent, #000 30%, transparent 92%);
+    pointer-events: none;
+  }
+
+  .contact-panel {
+    box-shadow: -1.4rem 1.4rem 0 color-mix(in srgb, var(--color-accent) 7%, transparent);
+  }
+
+  .contact-axis {
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    background:
+      linear-gradient(90deg, transparent calc(50% - 0.5px), var(--color-rule) calc(50% - 0.5px), var(--color-rule) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+      linear-gradient(0deg, transparent calc(50% - 0.5px), var(--color-rule) calc(50% - 0.5px), var(--color-rule) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    pointer-events: none;
+  }
+
+  @media (max-width: 63.99rem) {
+    .contact-panel {
+      box-shadow: -0.75rem 0.75rem 0 color-mix(in srgb, var(--color-accent) 7%, transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-panel {
+      box-shadow: none;
+    }
+  }
+</style>

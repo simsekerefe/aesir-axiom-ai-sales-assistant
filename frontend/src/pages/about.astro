@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPageContent } from '../lib/cms';
+
+type Locale = 'en' | 'tr';
+interface Props { locale?: Locale; }
+const { locale = 'en' } = Astro.props;
+const isTurkish = locale === 'tr';
+const fallbackCopy = isTurkish
+  ? {
+      title: 'Hakkımızda',
+      description: 'AESIR AXIOM’un çok disiplinli mühendislik, akıllı sistemler, otomasyon, yazılım ve uygulamalı araştırma yaklaşımını keşfedin.',
+      eyebrow: '01 / Hakkımızda',
+      heading: 'Sonuç üreten mühendislik zekâsı.',
+      introduction: 'AESIR AXIOM; mühendisliği, akıllı sistemleri, otomasyonu, yazılımı ve araştırmayı disiplinli bir teknik uygulamada bir araya getirir.',
+    }
+  : {
+      title: 'About',
+      description: 'Learn how AESIR AXIOM approaches multidisciplinary engineering, intelligent systems, automation, software, and applied research.',
+      eyebrow: '01 / About',
+      heading: 'Engineering intelligence with consequence.',
+      introduction: 'AESIR AXIOM brings engineering, intelligent systems, automation, software, and research into a disciplined technical practice.',
+    };
+
+interface AboutSection {
+  id: string;
+  title: string;
+  body: string;
+}
+
+const fallbackSections: AboutSection[] = isTurkish
+  ? [
+      {
+        id: 'ufkun-otesinde-muhendislik',
+        title: 'Ufkun Ötesinde Mühendislik',
+        body: 'AESIR AXIOM; ileri mühendislik sistemleri, yapay zekâ, otomasyon, güvenilir yazılım, araştırma, veri analitiği, simülasyon ve gerçek dünya teknolojileri geliştirir.',
+      },
+      {
+        id: 'cok-disiplinli-yetkinlikler',
+        title: 'Çok disiplinli yetkinlikler',
+        body: 'Çalışma alanlarımız; ileri mühendislik sistemleri, yapay zekâ, otomasyon, güvenilir yazılım, araştırma, veri analitiği, simülasyon ve gerçek dünya teknolojilerini kapsar.',
+      },
+      {
+        id: 'sistem-odakli-yaklasim',
+        title: 'Sistem odaklı yaklaşım',
+        body: 'Her projenin kapsamı ve çıktıları; bağlamı, hedefleri ve kısıtları doğrultusunda tanımlanır.',
+      },
+    ]
+  : [
+      {
+        id: 'engineering-beyond-the-horizon',
+        title: 'Engineering Beyond the Horizon',
+        body: 'AESIR AXIOM develops advanced engineering systems, artificial intelligence, automation, reliable software, research, analytics, simulation, and real-world technology.',
+      },
+      {
+        id: 'multidisciplinary-capability',
+        title: 'Multidisciplinary capability',
+        body: 'Our practice connects advanced engineering, AI, automation, dependable software, research, data analytics, and simulation instead of treating them as isolated services.',
+      },
+      {
+        id: 'systems-led-practice',
+        title: 'Systems-led practice',
+        body: 'Each engagement is shaped by its operating context, objectives, constraints, and the level of assurance the resulting system requires.',
+      },
+    ];
+
+const pageContent = await getPageContent('about', locale, ['about']);
+const hero = pageContent.sections.find((section) => section.sectionKey === 'hero');
+const copy = {
+  ...fallbackCopy,
+  eyebrow: hero?.eyebrow || fallbackCopy.eyebrow,
+  heading: hero?.title || fallbackCopy.heading,
+  introduction: hero?.body || fallbackCopy.introduction,
+};
+const cmsSections = pageContent.items
+  .filter((item) => item.groupKey === 'about' && item.title && item.body)
+  .map((item) => ({ id: item.id, title: item.title, body: item.body }));
+const aboutSections = cmsSections.length ? cmsSections : fallbackSections;
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+>
+  <section class="border-b border-rule bg-paper" aria-labelledby="about-heading">
+    <div class="mx-auto grid max-w-6xl gap-2xl px-lg py-3xl md:grid-cols-[0.72fr_1.28fr] md:gap-4xl md:py-4xl">
+      <header class="md:sticky md:top-[7rem] md:self-start">
+        <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent">{copy.eyebrow}</p>
+        <h1 id="about-heading" class="mt-lg font-display text-4xl leading-[1.03] tracking-[-0.035em] text-ink md:text-6xl">{copy.heading}</h1>
+        <p class="mt-xl max-w-prose text-base leading-7 text-ink-soft">{copy.introduction}</p>
+      </header>
+
+      <div class="border-t border-rule">
+        {aboutSections.map((section, index) => (
+          <article class="border-b border-rule py-xl md:py-2xl" aria-labelledby={`about-section-${section.id}`}>
+            <p class="font-mono text-xs tracking-[0.14em] text-accent">{String(index + 1).padStart(2, '0')}</p>
+            <h2 id={`about-section-${section.id}`} class="mt-sm font-display text-2xl tracking-[-0.02em] text-ink md:text-3xl">{section.title}</h2>
+            <div class="about-prose mt-lg text-[1.04rem] leading-8 text-ink-soft"><p>{section.body}</p></div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about-prose :global(p + p) { margin-top: var(--spacing-lg); }
+  .about-prose :global(h2), .about-prose :global(h3), .about-prose :global(h4) { margin-top: var(--spacing-xl); color: var(--color-ink); font-family: var(--font-display); line-height: 1.2; }
+  .about-prose :global(ul), .about-prose :global(ol) { margin-top: var(--spacing-lg); padding-left: var(--spacing-lg); list-style: revert; }
+  .about-prose :global(li + li) { margin-top: var(--spacing-xs); }
+  .about-prose :global(blockquote) { margin: var(--spacing-xl) 0; padding-left: var(--spacing-lg); border-left: 1px solid var(--color-accent); color: var(--color-ink); }
+  .about-prose :global(a) { color: var(--color-accent); text-decoration: underline; text-underline-offset: 0.18em; }
+  .about-prose :global(hr) { margin: var(--spacing-xl) 0; border: 0; border-top: 1px solid var(--color-rule); }
+</style>

@@ -1,0 +1,142 @@
+---
+import '../styles/global.css';
+import '../styles/components-forms.css';
+import '../styles/components-asgardian.css';
+import { ClientRouter } from 'astro:transitions';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+import AsgardianChat from '../components/AsgardianChat';
+import { getShellContent } from '../lib/cms';
+import { resolveWixImageUrl } from '../utils/wix-image';
+
+interface Props {
+  title?: string;
+  description?: string;
+  hasSeoTags?: boolean;
+  locale?: 'en' | 'tr';
+  robots?: 'index,follow' | 'noindex,nofollow';
+}
+const {
+  title,
+  description,
+  hasSeoTags = false,
+  locale = 'en',
+  robots = 'index,follow',
+} = Astro.props;
+const isLocalHost = Astro.url.hostname === 'localhost' || Astro.url.hostname === '127.0.0.1';
+const publicOrigin = isLocalHost ? Astro.url.origin : `https://${Astro.url.host}`;
+const shellContent = await getShellContent(locale, Astro.url.pathname);
+const siteSettings = shellContent.settings;
+const cmsSeo = shellContent.seo;
+const canonicalUrl = new URL(Astro.url.pathname, publicOrigin).href;
+const englishPath = Astro.url.pathname.replace(/^\/tr(?=\/|$)/, '') || '/';
+const turkishPath = englishPath === '/' ? '/tr/' : `/tr${englishPath}`;
+const englishUrl = new URL(englishPath, publicOrigin).href;
+const turkishUrl = new URL(turkishPath, publicOrigin).href;
+const fallbackLogoUrl = new URL('/assets/aesir-axiom-logo.jpeg', publicOrigin).href;
+const socialImageUrl = resolveWixImageUrl(cmsSeo?.ogImage || siteSettings?.logo, 1200, 630) || fallbackLogoUrl;
+const emblemUrl = resolveWixImageUrl(siteSettings?.emblem, 224, 224) || '/assets/aesir-axiom-emblem.png';
+const fallbackDocumentTitle = title
+  ? `AESIR AXIOM | ${title}`
+  : locale === 'tr'
+    ? 'AESIR AXIOM | Mühendislik Zekâsı'
+    : 'AESIR AXIOM | Engineering Intelligence';
+const loaderLabel = locale === 'tr' ? 'AESIR AXIOM yükleniyor' : 'Loading AESIR AXIOM';
+const documentTitle = cmsSeo?.title || fallbackDocumentTitle;
+const effectiveDescription = cmsSeo?.description || description;
+const effectiveRobots = robots === 'noindex,nofollow' || cmsSeo?.noIndex
+  ? 'noindex,nofollow'
+  : 'index,follow';
+const identifier = siteSettings?.brandIdentifier || (locale === 'tr' ? 'Mühendislik Zekâsı' : 'Engineering Intelligence');
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content={effectiveRobots} />
+    <link rel="icon" type="image/png" href={emblemUrl} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Marcellus&display=swap" />
+    {!hasSeoTags && (
+      <>
+        <title>{documentTitle}</title>
+        {effectiveDescription && <meta name="description" content={effectiveDescription} />}
+        <link rel="canonical" href={canonicalUrl} />
+        <link rel="alternate" hreflang="en" href={englishUrl} />
+        <link rel="alternate" hreflang="tr" href={turkishUrl} />
+        <link rel="alternate" hreflang="x-default" href={englishUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content={locale === 'tr' ? 'tr_TR' : 'en_US'} />
+        <meta property="og:locale:alternate" content={locale === 'tr' ? 'en_US' : 'tr_TR'} />
+        <meta property="og:site_name" content="AESIR AXIOM" />
+        <meta property="og:title" content={documentTitle} />
+        {effectiveDescription && <meta property="og:description" content={effectiveDescription} />}
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={socialImageUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={documentTitle} />
+        {effectiveDescription && <meta name="twitter:description" content={effectiveDescription} />}
+        <meta name="twitter:image" content={socialImageUrl} />
+      </>
+    )}
+    <slot name="head" />
+    <ClientRouter />
+  </head>
+  <body>
+    <div class="site-loader" data-site-loader role="status" aria-label={loaderLabel}>
+      <div class="site-loader-mark">
+        <span class="site-loader-geometry" aria-hidden="true"></span>
+        <img src={emblemUrl} alt="" width="112" height="112" />
+        <span>{identifier}</span>
+        <span class="site-loader-progress" aria-hidden="true"><i></i></span>
+      </div>
+    </div>
+    <div class="nav-progress" data-nav-progress aria-hidden="true"></div>
+    <Navigation locale={locale} settings={siteSettings} />
+    <main><slot /></main>
+    <Footer locale={locale} settings={siteSettings} />
+    <div transition:persist={`asgardian-chat-${locale}`}>
+      <AsgardianChat client:load locale={locale} emblemUrl={emblemUrl} />
+    </div>
+    <script>
+      // ClientRouter navigations use a restrained progress line instead of a
+      // full-page loader. The loader is reserved for the initial document load.
+      function startProgress() {
+        const progress = document.querySelector<HTMLElement>("[data-nav-progress]");
+        if (!progress) return;
+        progress.dataset.state = "loading";
+        document.body.dataset.navigating = "true";
+      }
+      function endProgress() {
+        const progress = document.querySelector<HTMLElement>("[data-nav-progress]");
+        if (!progress) return;
+        progress.dataset.state = "done";
+        delete document.body.dataset.navigating;
+        window.setTimeout(() => {
+          if (progress.dataset.state === "done") delete progress.dataset.state;
+        }, 320);
+      }
+
+      document.addEventListener("astro:before-preparation", startProgress);
+      document.addEventListener("astro:after-swap", endProgress);
+
+      const dismissLoader = () => {
+        const loader = document.querySelector<HTMLElement>("[data-site-loader]");
+        if (!loader) return;
+        loader.dataset.state = "complete";
+        window.setTimeout(() => {
+          loader.remove();
+          document.documentElement.classList.add("site-ready");
+        }, 560);
+      };
+      document.addEventListener("astro:page-load", () => {
+        endProgress();
+        dismissLoader();
+      });
+      if (document.readyState === "complete") dismissLoader();
+      else window.addEventListener("load", dismissLoader, { once: true });
+    </script>
+  </body>
+</html>

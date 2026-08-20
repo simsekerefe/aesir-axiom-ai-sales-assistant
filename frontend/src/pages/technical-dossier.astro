@@ -1,0 +1,227 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const criteria = [
+  ['%30', 'Mimari / SoC', 'Astro arayüzü, sunucu proxy rotaları, Flask kontrolcüleri, AI servisi ve veri katmanı ayrı sorumluluklara sahiptir.'],
+  ['%25', 'Çalışırlık', 'Canlı site, iki dil, ASGARDIAN sohbeti, lead toplama, çalışan paneli ve health kontrolü birlikte doğrulanır.'],
+  ['%15', 'Kod kalitesi', 'TypeScript tipleri, tekrar kullanılabilir bileşenler, merkezi tokenlar ve açıklanabilir dosya sınırları kullanılır.'],
+  ['%10', 'Güvenlik', 'Anahtarlar ortam değişkenindedir; girdiler sınırlandırılır, çalışan paneli oturum/CSRF ile korunur.'],
+  ['%10', 'Hata yönetimi', 'Frontend proxy, Flask rotaları, veritabanı ve AI servisinde kontrollü hata dönüşleri bulunur.'],
+  ['%10', 'Yayın / sunum', 'Wix frontend, Render backend, GitHub kaynak kodu ve bu teknik dossier canlı kanıt sunar.'],
+];
+
+const apiRows = [
+  ['GET', '/health', 'Backend ve veritabanı canlılık kontrolü'],
+  ['POST', '/api/sohbet', 'ASGARDIAN yanıt üretimi'],
+  ['POST', '/api/leads', 'Müşteri adayı kaydı'],
+  ['GET', '/api/leads', 'Yetkili çalışan için lead listesi'],
+  ['GET', '/dashboard', 'Oturum korumalı operasyon paneli'],
+];
+---
+
+<Layout
+  title="Teknik Proje Dosyası"
+  description="AESIR AXIOM frontend, backend ve tasarım sisteminin jüri sunumu için teknik açıklaması."
+  locale="tr"
+  robots="noindex,nofollow"
+>
+  <section class="dossier-hero">
+    <div class="dossier-shell">
+      <p class="dossier-kicker">SYS / 001 · JÜRİ TEKNİK DOSYASI</p>
+      <h1>Çalışan bir arayüzden<br />açıklanabilir bir sisteme.</h1>
+      <p class="dossier-lede">AESIR AXIOM kurumsal sitesi; Wix üzerinde çalışan Astro frontend, Render üzerinde çalışan Flask backend ve Groq tabanlı ASGARDIAN yapay zekâ servisinden oluşur.</p>
+      <div class="dossier-actions">
+        <a href="/" class="dossier-link">Canlı siteyi aç <span>↗</span></a>
+        <a href="https://github.com/simsekerefe/aesir-axiom-ai-sales-assistant" class="dossier-link" target="_blank" rel="noreferrer">Kaynak kodu aç <span>↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="dossier-section" aria-labelledby="status-heading">
+    <div class="dossier-shell">
+      <div class="section-heading"><p>01 / CANLI KANIT</p><h2 id="status-heading">Sistem durumu</h2></div>
+      <div class="status-grid" data-system-health aria-live="polite">
+        <article><span>FRONTEND</span><strong data-health-frontend>Kontrol ediliyor</strong><small>Wix Managed Headless</small></article>
+        <article><span>WIX CMS</span><strong data-health-cms>Kontrol ediliyor</strong><small data-health-cms-count>Çift dilli içerik modeli</small></article>
+        <article><span>BACKEND</span><strong data-health-backend>Kontrol ediliyor</strong><small data-health-latency>Render / Flask</small></article>
+        <article><span>VERİTABANI</span><strong data-health-database>Kontrol ediliyor</strong><small data-health-database-type>Kalıcı veri katmanı</small></article>
+        <article><span>AI MODELİ</span><strong data-health-ai>Kontrol ediliyor</strong><small data-health-ai-model>Groq / yapılandırma</small></article>
+      </div>
+      <p class="health-time" data-health-time>Canlı doğrulama başlatıldı…</p>
+    </div>
+  </section>
+
+  <section class="dossier-section architecture-section" aria-labelledby="architecture-heading">
+    <div class="dossier-shell">
+      <div class="section-heading"><p>02 / MİMARİ</p><h2 id="architecture-heading">Uçtan uca veri akışı</h2></div>
+      <ol class="system-flow">
+        <li><span>01</span><strong>Ziyaretçi</strong><p>Sohbet eder veya iletişim bilgisi bırakır.</p></li>
+        <li><span>02</span><strong>Astro / React</strong><p>Girdiyi doğrular ve sunucu rotasına iletir.</p></li>
+        <li><span>03</span><strong>Wix API proxy</strong><p>Backend adresini gizler, timeout ve hata dönüşünü yönetir.</p></li>
+        <li><span>04</span><strong>Flask Blueprints</strong><p>HTTP isteğini doğru servis katmanına yönlendirir.</p></li>
+        <li><span>05</span><strong>AI + veri servisleri</strong><p>Groq yanıtını üretir veya lead kaydını güvenle saklar.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="dossier-section" aria-labelledby="layers-heading">
+    <div class="dossier-shell">
+      <div class="section-heading"><p>03 / KATMANLAR</p><h2 id="layers-heading">Sorumlulukların ayrılığı</h2></div>
+      <div class="layer-grid">
+        <article><span>F / FRONTEND</span><h3>Sunum ve etkileşim</h3><p>Astro sayfaları semantik HTML üretir. React yalnızca ASGARDIAN ve form gibi durum yönetimi gereken bileşenlerde yüklenir.</p></article>
+        <article><span>C / CMS</span><h3>Yönetilebilir içerik</h3><p>Metin, SEO ve görsel referansları; dil, sayfa, bölüm ve sıralama alanlarıyla Wix CMS koleksiyonlarında tutulur.</p></article>
+        <article><span>P / PROXY</span><h3>Güvenli bağlantı sınırı</h3><p>Sunucu rotaları girdi boyutlarını, dil bilgisini, zaman aşımını ve güvenli hata mesajlarını yönetir.</p></article>
+        <article><span>B / BACKEND</span><h3>İş mantığı</h3><p>Flask rotaları yalnızca akışı yönetir; SQL veri katmanında, AI sağlayıcı çağrısı servis katmanında kalır.</p></article>
+        <article><span>D / DATA</span><h3>Kalıcılık</h3><p>Üretimde PostgreSQL, yerel geliştirmede SQLite kullanılır. Sorgular bağlı parametrelerle yürütülür.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="dossier-section" aria-labelledby="api-heading">
+    <div class="dossier-shell">
+      <div class="section-heading"><p>04 / API SÖZLEŞMESİ</p><h2 id="api-heading">Gösterilebilir uç noktalar</h2></div>
+      <div class="api-table" role="table" aria-label="API uç noktaları">
+        {apiRows.map(([method, path, purpose]) => (
+          <div class="api-row" role="row"><span role="cell">{method}</span><code role="cell">{path}</code><p role="cell">{purpose}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="dossier-section design-section" aria-labelledby="design-heading">
+    <div class="dossier-shell">
+      <div class="section-heading"><p>05 / TASARIM SİSTEMİ</p><h2 id="design-heading">Kontrollü futurizm</h2></div>
+      <div class="design-layout">
+        <div class="swatches" aria-label="Marka renkleri">
+          <span style="--swatch:#0F141D"><b>Frosted Midnight</b><small>#0F141D</small></span>
+          <span style="--swatch:#1E3A4D"><b>Norse Blue</b><small>#1E3A4D</small></span>
+          <span style="--swatch:#6E7D8A"><b>Glacier Steel</b><small>#6E7D8A</small></span>
+          <span style="--swatch:#D4AF37"><b>Nordic Gold</b><small>#D4AF37</small></span>
+          <span class="light" style="--swatch:#F5F7FA"><b>Ice White</b><small>#F5F7FA</small></span>
+        </div>
+        <div class="type-specimen"><span>BAŞLIK / MARCELLUS</span><strong>Engineering Intelligence</strong><span>GÖVDE VE ARAYÜZ / INTER</span><p>Tipografi, mühendislik otoritesini okunabilir ve ölçülü bir kurumsal dille birleştirir.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dossier-section" aria-labelledby="criteria-heading">
+    <div class="dossier-shell">
+      <div class="section-heading"><p>06 / DEĞERLENDİRME</p><h2 id="criteria-heading">Yönergeye karşı kanıt</h2></div>
+      <div class="criteria-list">
+        {criteria.map(([weight, title, proof]) => <article><span>{weight}</span><h3>{title}</h3><p>{proof}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="dossier-section demo-section" aria-labelledby="demo-heading">
+    <div class="dossier-shell">
+      <div class="section-heading"><p>07 / DEMO SIRASI</p><h2 id="demo-heading">Jüri anlatım akışı</h2></div>
+      <ol class="demo-list">
+        <li><span>01</span><p>Canlı ana sayfa, mobil uyum ve iki dil geçişi</p></li>
+        <li><span>02</span><p>ASGARDIAN ile gerçek yapay zekâ sohbeti</p></li>
+        <li><span>03</span><p>İletişim bilgisinin lead olarak kaydedilmesi</p></li>
+        <li><span>04</span><p>Çalışan girişinden kaydın yönetim panelinde görülmesi</p></li>
+        <li><span>05</span><p>GitHub üzerinde SoC dosya yapısının açıklanması</p></li>
+        <li><span>06</span><p>Bu sayfadaki canlı health ve değerlendirme kanıtlarının gösterilmesi</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <script>
+    const labels = {
+      operational: 'ÇALIŞIYOR',
+      degraded: 'KISMİ',
+      unreachable: 'ERİŞİLEMİYOR',
+      not_configured: 'YAPILANDIRILMADI',
+      unknown: 'BİLİNMİYOR',
+    } as const;
+
+    const labelFor = (value: unknown) => labels[String(value) as keyof typeof labels] ?? String(value || labels.unknown).toUpperCase();
+    const write = (selector: string, value: string) => {
+      const element = document.querySelector<HTMLElement>(selector);
+      if (element) element.textContent = value;
+    };
+
+    async function updateSystemHealth() {
+      try {
+        const [systemResponse, contentResponse] = await Promise.all([
+          fetch('/api/system-health', { headers: { Accept: 'application/json' } }),
+          fetch('/api/content-health', { headers: { Accept: 'application/json' } }),
+        ]);
+        const [data, content] = await Promise.all([systemResponse.json(), contentResponse.json()]);
+        write('[data-health-frontend]', labelFor(data.frontend?.status));
+        write('[data-health-cms]', labelFor(content.status));
+        write('[data-health-cms-count]', `${content.totalItems ?? '—'} KAYIT · EN ${content.locales?.en ?? '—'} / TR ${content.locales?.tr ?? '—'}`);
+        write('[data-health-backend]', labelFor(data.backend?.status));
+        write('[data-health-database]', labelFor(data.backend?.database));
+        write('[data-health-ai]', labelFor(data.backend?.artificialIntelligence));
+        write('[data-health-latency]', `Render / Flask · ${data.backend?.latencyMs ?? '—'} ms`);
+        write('[data-health-database-type]', String(data.backend?.databaseType || 'Veri katmanı').toUpperCase());
+        write('[data-health-ai-model]', `${String(data.backend?.aiProvider || '—').toUpperCase()} · ${data.backend?.aiModel || '—'}`);
+        write('[data-health-time]', `Son kontrol: ${new Date(data.checkedAt).toLocaleString('tr-TR')}`);
+        document.querySelector('[data-system-health]')?.classList.toggle('is-degraded', !systemResponse.ok || !contentResponse.ok);
+      } catch {
+        write('[data-health-backend]', labels.unreachable);
+        write('[data-health-database]', labels.unknown);
+        write('[data-health-time]', 'Canlı kontrol tamamlanamadı.');
+        document.querySelector('[data-system-health]')?.classList.add('is-degraded');
+      }
+    }
+
+    document.addEventListener('astro:page-load', updateSystemHealth);
+    updateSystemHealth();
+  </script>
+</Layout>
+
+<style>
+  .dossier-shell { width:min(100% - 3rem,88rem); margin-inline:auto; }
+  .dossier-hero { min-height:72vh; display:grid; align-items:end; padding:10rem 0 5rem; border-bottom:1px solid var(--color-rule); background:radial-gradient(circle at 78% 35%,rgba(212,175,55,.09),transparent 24%),linear-gradient(135deg,#0f141d,#0b1017); }
+  .dossier-kicker,.section-heading p,.layer-grid span,.status-grid span,.type-specimen>span { color:var(--color-accent); font:.66rem/1.3 var(--font-mono); letter-spacing:.15em; text-transform:uppercase; }
+  h1 { max-width:12ch; font-size:clamp(3.4rem,7.8vw,8rem); line-height:.98; letter-spacing:-.045em; }
+  .dossier-lede { max-width:48rem; margin-top:2rem; color:var(--color-ink-soft); font-size:clamp(1rem,1.6vw,1.25rem); line-height:1.75; }
+  .dossier-actions { display:flex; flex-wrap:wrap; gap:1.4rem; margin-top:2.3rem; }
+  .dossier-link { display:inline-flex; gap:.8rem; padding:.8rem 0; border-bottom:1px solid var(--color-accent); font:.7rem var(--font-mono); letter-spacing:.1em; text-transform:uppercase; }
+  .dossier-link:hover { color:var(--color-accent); }
+  .dossier-section { padding:clamp(5rem,9vw,8rem) 0; border-bottom:1px solid var(--color-rule); }
+  .section-heading { display:grid; grid-template-columns:.35fr 1fr; gap:2rem; align-items:end; margin-bottom:3.5rem; }
+  .section-heading h2 { font-size:clamp(2.3rem,4.5vw,4.8rem); font-weight:400; }
+  .status-grid,.layer-grid { display:grid; grid-template-columns:repeat(5,1fr); border:1px solid var(--color-rule); }
+  .status-grid article,.layer-grid article { min-height:13rem; padding:1.5rem; border-right:1px solid var(--color-rule); }
+  .status-grid article:last-child,.layer-grid article:nth-child(3n) { border-right:0; }
+  .status-grid strong { display:block; margin:3rem 0 .6rem; color:#9fd6bc; font:1.25rem var(--font-mono); letter-spacing:.08em; }
+  .status-grid.is-degraded strong { color:#e6b8a9; }
+  .status-grid small { color:var(--color-mute); }
+  .health-time { margin-top:1rem; color:var(--color-mute); font:.65rem var(--font-mono); letter-spacing:.08em; }
+  .architecture-section { background:#0b1017; }
+  .system-flow { display:grid; grid-template-columns:repeat(5,1fr); border-top:1px solid var(--color-rule); border-left:1px solid var(--color-rule); }
+  .system-flow li { position:relative; min-height:18rem; padding:1.4rem; border-right:1px solid var(--color-rule); border-bottom:1px solid var(--color-rule); }
+  .system-flow li:not(:last-child)::after { content:'→'; position:absolute; right:-.65rem; top:50%; z-index:2; width:1.3rem; text-align:center; color:var(--color-accent); background:#0b1017; }
+  .system-flow span,.api-row>span,.criteria-list>article>span,.demo-list span { color:var(--color-accent); font:.68rem var(--font-mono); letter-spacing:.12em; }
+  .system-flow strong { display:block; margin:4rem 0 1rem; font:1.25rem var(--font-display); }
+  .system-flow p,.layer-grid p,.criteria-list p { color:var(--color-ink-soft); line-height:1.65; }
+  .layer-grid { grid-template-columns:repeat(3,1fr); }
+  .layer-grid article { min-height:17rem; border-bottom:1px solid var(--color-rule); }
+  .layer-grid article:nth-child(n+4) { border-bottom:0; }
+  .layer-grid h3 { margin:4rem 0 1rem; font-size:1.6rem; font-weight:400; }
+  .api-table { border-top:1px solid var(--color-rule); }
+  .api-row { display:grid; grid-template-columns:7rem minmax(13rem,.7fr) 1fr; gap:1rem; align-items:center; min-height:5rem; border-bottom:1px solid var(--color-rule); }
+  .api-row code { color:var(--color-ink); font:.86rem var(--font-mono); }
+  .api-row p { color:var(--color-ink-soft); }
+  .design-section { background:#121c26; }
+  .design-layout { display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,7rem); }
+  .swatches { display:grid; grid-template-columns:repeat(5,1fr); min-height:20rem; }
+  .swatches span { display:flex; flex-direction:column; justify-content:flex-end; gap:.4rem; padding:1rem; color:#f5f7fa; background:var(--swatch); border:1px solid rgba(245,247,250,.12); }
+  .swatches span.light { color:#0f141d; }
+  .swatches b,.swatches small { writing-mode:vertical-rl; transform:rotate(180deg); font:.62rem var(--font-mono); letter-spacing:.08em; }
+  .type-specimen { display:flex; flex-direction:column; justify-content:center; }
+  .type-specimen strong { display:block; margin:1.1rem 0 3rem; font:clamp(2.5rem,5vw,5.5rem)/1 var(--font-display); }
+  .type-specimen p { max-width:32rem; margin-top:1rem; color:var(--color-ink-soft); line-height:1.7; }
+  .criteria-list { border-top:1px solid var(--color-rule); }
+  .criteria-list article { display:grid; grid-template-columns:7rem .55fr 1fr; gap:1rem; padding:1.6rem 0; border-bottom:1px solid var(--color-rule); }
+  .criteria-list h3 { font-size:1.25rem; font-weight:400; }
+  .demo-section { background:#0a0f15; }
+  .demo-list li { display:grid; grid-template-columns:5rem 1fr; gap:1rem; padding:1.5rem 0; border-bottom:1px solid var(--color-rule); }
+  .demo-list p { font:clamp(1.15rem,2vw,1.8rem) var(--font-display); }
+  @media(max-width:900px){ .status-grid,.system-flow { grid-template-columns:1fr; } .status-grid article,.system-flow li { min-height:auto; border-right:0; border-bottom:1px solid var(--color-rule); } .system-flow li:not(:last-child)::after { content:'↓'; top:auto; right:50%; bottom:-.65rem; background:#0b1017; } .system-flow strong { margin:2rem 0 .7rem; } .design-layout { grid-template-columns:1fr; } }
+  @media(max-width:700px){ .dossier-shell { width:min(100% - 2rem,88rem); } .section-heading { grid-template-columns:1fr; } .layer-grid { grid-template-columns:1fr; } .layer-grid article { border-right:0!important; border-bottom:1px solid var(--color-rule)!important; } .api-row { grid-template-columns:4rem 1fr; padding:1rem 0; } .api-row p { grid-column:2; } .criteria-list article { grid-template-columns:4rem 1fr; } .criteria-list p { grid-column:2; } .swatches { min-height:14rem; } }
+</style>

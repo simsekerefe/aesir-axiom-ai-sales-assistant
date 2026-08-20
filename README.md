@@ -1,10 +1,21 @@
-# AESIR AXIOM — ASGARDIAN AI Sales Assistant
+# AESIR AXIOM — Full-Stack Engineering Intelligence Platform
 
-ASGARDIAN, AESIR AXIOM markası için geliştirilen modüler bir Flask backend uygulamasıdır. Kullanıcı mesajlarını yapay zekâ servisine iletir, yanıt üretir ve müşteri adayı (lead) bilgilerini üretimde PostgreSQL veritabanında kalıcı olarak saklar. Yerel geliştirmede SQLite kullanılabilir.
+Bu depo, AESIR AXIOM'un Wix üzerinde çalışan çift dilli kurumsal frontend'ini
+ve ASGARDIAN yapay zekâ/lead operasyon backend'ini tek, jüri tarafından
+denetlenebilir teslim altında birleştirir. Ziyaretçi AI ile görüşebilir veya
+talep bırakabilir; kayıt üretimde PostgreSQL'e yazılır ve yetkili çalışan
+ASGARDIAN Control panelinden erişir.
+
+## Canlı sistem
+
+- Frontend: https://aesir-axio-b8ecbbfe-simsekerismetefe.wix-site-host.com/
+- Teknik dossier: https://aesir-axio-b8ecbbfe-simsekerismetefe.wix-site-host.com/technical-dossier
+- Backend health: https://aesir-axiom-ai-sales-assistant.onrender.com/health
+- Çalışan girişi: https://aesir-axiom-ai-sales-assistant.onrender.com/dashboard/login
 
 ## Teknoloji Yığını
 
-- Python 3.9+
+- Python 3.10+
 - Flask
 - Flask-CORS
 - PostgreSQL (üretim) / SQLite (yerel geliştirme)
@@ -13,6 +24,10 @@ ASGARDIAN, AESIR AXIOM markası için geliştirilen modüler bir Flask backend u
 - python-dotenv
 - requests
 - gunicorn
+- Astro 5 + TypeScript
+- React islands
+- Wix Managed Headless, CMS ve Forms
+- Tailwind CSS v4 / merkezi tasarım tokenları
 
 ## Mimari
 
@@ -23,6 +38,11 @@ aesir-axiom-ai-sales-assistant/
 ├── run.py
 ├── config.py
 ├── requirements.txt
+├── openapi.yaml
+├── docs/
+├── scripts/
+├── tests/
+├── frontend/           # Wix/Astro kurumsal site ve ASGARDIAN arayüzü
 ├── .env.example
 ├── .gitignore
 ├── README.md
@@ -31,6 +51,7 @@ aesir-axiom-ai-sales-assistant/
     ├── auth.py
     ├── database.py
     ├── routes.py
+    ├── validation.py
     ├── templates/
     │   ├── index.html
     │   └── dashboard.html
@@ -43,9 +64,11 @@ aesir-axiom-ai-sales-assistant/
 - `app/auth.py`: çalışan oturumu, rol kontrolü ve CSRF doğrulaması
 - `app/database.py`: PostgreSQL/SQLite bağlantısı ve tüm veri işlemleri
 - `app/routes.py`: HTTP rotaları ve istek doğrulama
+- `app/validation.py`: API tür, uzunluk ve geçmiş sınırları
 - `app/services/ai_service.py`: tüm yapay zekâ sağlayıcı çağrıları
 - `app/__init__.py`: `create_app()` uygulama fabrikası
 - `run.py`: uygulama giriş noktası
+- `frontend/`: iki dil, Wix CMS, form proxy'leri, SEO ve teknik dossier
 
 ## Kurulum
 
@@ -80,6 +103,17 @@ FLASK_ENV=development
 
 Gerçek `.env` dosyası GitHub'a yüklenmemelidir.
 
+Frontend yerel geliştirme:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend sunucu proxy'si için `ASGARDIAN_BACKEND_URL` değeri yalnız hosting
+ortamında veya Git dışındaki `.env.local` dosyasında tanımlanır.
+
 ## Çalıştırma
 
 ```bash
@@ -96,7 +130,8 @@ GET /health
 
 ### `GET /health`
 Sunucunun ve veritabanı bağlantısının aktif olduğunu doğrular; hassas bağlantı
-bilgilerini açığa çıkarmadan etkin SQL altyapısını bildirir.
+bilgilerini açığa çıkarmadan etkin SQL altyapısını, AI sağlayıcısını, modeli ve
+anahtarın aktif/demo durumunu bildirir.
 
 ### `POST /api/sohbet`
 Örnek istek:
@@ -104,7 +139,8 @@ bilgilerini açığa çıkarmadan etkin SQL altyapısını bildirir.
 ```json
 {
   "mesaj": "AESIR AXIOM hangi alanlarda hizmet veriyor?",
-  "gecmis": []
+  "gecmis": [],
+  "dil": "tr"
 }
 ```
 
@@ -171,6 +207,28 @@ https://<render-servis-adresi>/health
 - SQLAlchemy Core tüm kullanıcı verilerini bağlı parametrelerle sorgular.
 - Veritabanı ve AI servis hataları güvenli HTTP/JSON yanıtlarına çevrilir.
 - SQL yalnızca `database.py`, AI sağlayıcı çağrıları yalnızca `ai_service.py` içinde bulunur.
+- İstek gövdesi 64 KiB; mesaj, geçmiş ve lead alanları ayrıca sınırlandırılır.
+- Dashboard nonce tabanlı CSP, frame koruması ve güvenli cache başlıkları taşır.
+
+## Otomatik doğrulama
+
+```bash
+python -m unittest discover -s tests -v
+python scripts/architecture_audit.py
+cd frontend && npm run verify
+```
+
+Test paketi geçici SQLite üzerinde chat, model payload'ı, lead kalıcılığı,
+SQL-injection benzeri veri, çalışan oturumu, CSRF, CSP ve hata yollarını kapsar.
+
+## Teknik belgeler
+
+- [Backend mimarisi](docs/ARCHITECTURE.md)
+- [Güvenlik modeli](docs/SECURITY.md)
+- [Test stratejisi](docs/TESTING.md)
+- [Render dağıtımı](docs/DEPLOYMENT.md)
+- [Yönerge izlenebilirliği](docs/TRACEABILITY.md)
+- [OpenAPI sözleşmesi](openapi.yaml)
 
 ## Proje
 

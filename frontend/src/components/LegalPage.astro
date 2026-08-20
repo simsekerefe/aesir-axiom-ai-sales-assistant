@@ -1,0 +1,125 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPageContent } from '../lib/cms';
+
+type Locale = 'en' | 'tr';
+type LegalKind = 'privacy' | 'terms';
+
+interface Props {
+  locale?: Locale;
+  kind: LegalKind;
+}
+
+const { locale = 'en', kind } = Astro.props;
+const isTurkish = locale === 'tr';
+
+const privacy = isTurkish
+  ? {
+      title: 'Gizlilik Bildirimi',
+      description: 'AESIR AXIOM web sitesi, iletişim formları ve ASGARDIAN asistanında kişisel verilerin nasıl işlendiğine ilişkin açıklama.',
+      eyebrow: 'YASAL / 01',
+      heading: 'Gizlilik bildirimi.',
+      introduction: 'Bu bildirim, AESIR AXIOM web sitesinde doğrudan paylaştığınız bilgilerin hangi amaçlarla işlendiğini ve sistemin veri akışını açıklar.',
+      sections: [
+        ['Toplanan bilgiler', 'İletişim formu; ad, şirket, e-posta, telefon, proje türü ve mesaj bilgilerini alabilir. ASGARDIAN yalnızca yazdığınız konuşma içeriğini işler; iletişim bilgileri ise takip formunu ayrıca gönderdiğinizde alınır.'],
+        ['İşleme amaçları', 'Bilgiler; talebinizi değerlendirmek, uygun çalışma alanına yönlendirmek, sizinle iletişim kurmak ve hizmet güvenilirliğini korumak amacıyla kullanılır.'],
+        ['Sistem akışı', 'Form gönderimleri Wix üzerinde kaydedilir ve çalışan takip akışı için AESIR AXIOM backend hizmetine yönlendirilir. ASGARDIAN mesajları, yanıt üretimi için yapılandırılmış yapay zekâ model sağlayıcısına iletilir.'],
+        ['Güvenlik ve veri minimizasyonu', 'API anahtarları tarayıcıya gönderilmez. İstekler sunucu katmanında doğrulanır ve yalnızca hizmet için gereken alanlar aktarılır. ASGARDIAN görüşmesine ticari sır, özel nitelikli kişisel veri veya güvenlik açısından kritik bilgi girmeyin.'],
+        ['Başvurular', 'Bilgilerinizle ilgili erişim, düzeltme veya silme talebinizi iletişim sayfasındaki form üzerinden iletebilirsiniz. Talep, uygulanabilir mevzuat ve sistem kayıtları doğrultusunda değerlendirilir.'],
+      ],
+    }
+  : {
+      title: 'Privacy Notice',
+      description: 'How personal information is handled across the AESIR AXIOM website, inquiry forms, and ASGARDIAN assistant.',
+      eyebrow: 'LEGAL / 01',
+      heading: 'Privacy notice.',
+      introduction: 'This notice explains why information you submit directly through the AESIR AXIOM website is processed and how it moves through the system.',
+      sections: [
+        ['Information received', 'The inquiry form may receive your name, company, email, phone number, project type, and message. ASGARDIAN processes only the conversation you enter; contact details are received only if you separately submit its follow-up form.'],
+        ['Purposes', 'Information is used to assess and route your inquiry, respond to you, and maintain a reliable service.'],
+        ['System flow', 'Form submissions are recorded in Wix and routed to the AESIR AXIOM backend for employee follow-up. ASGARDIAN messages are sent to the configured AI model provider to generate a response.'],
+        ['Security and minimization', 'API keys are never delivered to the browser. Server-side layers validate requests and forward only the fields required for the service. Do not enter trade secrets, sensitive personal data, or safety-critical information into ASGARDIAN.'],
+        ['Requests', 'You may request access, correction, or deletion using the contact-page form. Requests are assessed against applicable law and system records.'],
+      ],
+    };
+
+const terms = isTurkish
+  ? {
+      title: 'Kullanım Koşulları',
+      description: 'AESIR AXIOM web sitesi ve ASGARDIAN yapay zekâ asistanı için kullanım koşulları.',
+      eyebrow: 'YASAL / 02',
+      heading: 'Kullanım koşulları.',
+      introduction: 'Bu koşullar, AESIR AXIOM web sitesindeki bilgi, form ve yapay zekâ destekli özelliklerin kullanım çerçevesini açıklar.',
+      sections: [
+        ['Bilgilendirme amacı', 'Sitedeki içerik genel kurumsal ve teknik bilgilendirme sağlar. Bir proje teklifi, garanti, sertifikasyon veya bağlayıcı mühendislik taahhüdü oluşturmaz.'],
+        ['ASGARDIAN yanıtları', 'ASGARDIAN yanıtları yapay zekâ tarafından üretilir ve hata içerebilir. Güvenlik, mevzuat, finans veya kritik mühendislik kararları yetkin uzmanlar ve doğrulanmış kaynaklarla ayrıca değerlendirilmelidir.'],
+        ['Fikrî haklar', 'AESIR AXIOM adı, amblemi, tasarım sistemi ve özgün site içeriği üzerindeki haklar saklıdır. Sitenin erişilebilir olması bu unsurlar için lisans verildiği anlamına gelmez.'],
+        ['Hizmet sürekliliği', 'Sistem; bakım, harici servis veya ağ koşulları nedeniyle zaman zaman kesintiye uğrayabilir. Kullanılabilirliği korumak için hata yönetimi ve sağlık kontrolleri uygulanır.'],
+        ['Proje çalışmaları', 'Ticari veya teknik bir çalışma ancak kapsam, sorumluluk, teslimat ve koşulların ayrı bir yazılı anlaşmayla belirlenmesinden sonra başlar.'],
+      ],
+    }
+  : {
+      title: 'Terms of Use',
+      description: 'Terms governing use of the AESIR AXIOM website and ASGARDIAN AI assistant.',
+      eyebrow: 'LEGAL / 02',
+      heading: 'Terms of use.',
+      introduction: 'These terms explain the framework for using the information, forms, and AI-assisted features on the AESIR AXIOM website.',
+      sections: [
+        ['Informational purpose', 'Website content provides general corporate and technical information. It is not a project proposal, warranty, certification, or binding engineering commitment.'],
+        ['ASGARDIAN responses', 'ASGARDIAN responses are AI-generated and may contain errors. Safety, regulatory, financial, and critical engineering decisions must be reviewed by qualified people against verified sources.'],
+        ['Intellectual property', 'Rights in the AESIR AXIOM name, emblem, design system, and original site content are reserved. Access to the website does not grant a license to those materials.'],
+        ['Service continuity', 'Maintenance, external services, or network conditions may occasionally interrupt the system. Error handling and health checks are used to support availability.'],
+        ['Project engagements', 'Commercial or technical work begins only after scope, responsibilities, deliverables, and terms are defined in a separate written agreement.'],
+      ],
+    };
+
+const fallbackCopy = kind === 'privacy' ? privacy : terms;
+const pageContent = await getPageContent(kind, locale, [kind]);
+const hero = pageContent.sections.find((section) => section.sectionKey === 'hero');
+const cmsSections = pageContent.items
+  .filter((item) => item.groupKey === kind && item.title && item.body)
+  .map((item) => [item.title, item.body]);
+const copy = {
+  ...fallbackCopy,
+  eyebrow: hero?.eyebrow || fallbackCopy.eyebrow,
+  heading: hero?.title || fallbackCopy.heading,
+  introduction: hero?.body || fallbackCopy.introduction,
+  sections: cmsSections.length ? cmsSections : fallbackCopy.sections,
+};
+---
+
+<Layout title={copy.title} description={copy.description} locale={locale}>
+  <section class="legal" aria-labelledby="legal-heading">
+    <div class="legal-grid" aria-hidden="true"></div>
+    <div class="shell">
+      <header>
+        <p class="eyebrow">{copy.eyebrow}</p>
+        <h1 id="legal-heading">{copy.heading}</h1>
+        <p class="introduction">{copy.introduction}</p>
+      </header>
+      <ol>
+        {copy.sections.map(([title, body], index) => (
+          <li>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <div><h2>{title}</h2><p>{body}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .legal { position: relative; min-height: 70vh; overflow: hidden; border-bottom: 1px solid var(--color-rule); }
+  .legal-grid { position: absolute; inset: 0; opacity: .14; background-image: linear-gradient(var(--color-rule) 1px,transparent 1px),linear-gradient(90deg,var(--color-rule) 1px,transparent 1px); background-size: 7rem 7rem; mask-image: linear-gradient(90deg,#000,transparent 75%); pointer-events: none; }
+  .shell { position: relative; width: min(100% - 3rem,var(--container-6xl)); margin: auto; padding: clamp(6rem,10vw,9rem) 0; }
+  header { max-width: 53rem; }
+  .eyebrow, li > span { color: var(--color-accent); font: .7rem/1.3 var(--font-mono); letter-spacing: .16em; }
+  h1 { margin-top: 1.25rem; font-size: clamp(3.2rem,7vw,7.4rem); letter-spacing: -.05em; }
+  .introduction { max-width: 48rem; margin-top: 1.7rem; color: var(--color-ink-soft); font-size: 1.1rem; line-height: 1.8; }
+  ol { max-width: 58rem; margin-top: clamp(4rem,8vw,7rem); border-top: 1px solid var(--color-rule); }
+  li { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem; padding: 1.6rem 0; border-bottom: 1px solid var(--color-rule); }
+  li h2 { font-size: clamp(1.45rem,2.4vw,2rem); }
+  li p { margin-top: .65rem; color: var(--color-ink-soft); line-height: 1.75; }
+  @media (max-width: 600px) { .shell { width: min(100% - 2rem,var(--container-6xl)); } li { grid-template-columns: 2.5rem 1fr; } }
+</style>

@@ -35,6 +35,8 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     PERMANENT_SESSION_LIFETIME = timedelta(hours=8)
+    SESSION_REFRESH_EACH_REQUEST = False
+    MAX_CONTENT_LENGTH = 64 * 1024
 
     DATABASE_URL = os.environ.get(
         "DATABASE_URL",

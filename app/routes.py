@@ -1,4 +1,12 @@
-from flask import Blueprint, jsonify, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    current_app,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 
 from app.auth import (
     authenticate_employee,
@@ -13,6 +21,17 @@ from app.auth import (
 )
 from app.database import DatabaseError, lead_ekle, tum_leadler
 from app.services.ai_service import AIServiceError, ai_service
+from app.validation import (
+    MAX_LEAD_MESSAGE_LENGTH,
+    MAX_MESSAGE_LENGTH,
+    MAX_NAME_LENGTH,
+    MAX_PHONE_LENGTH,
+    ValidationError,
+    chat_history,
+    locale,
+    optional_text,
+    required_text,
+)
 
 
 pages_bp = Blueprint("pages", __name__)
@@ -91,23 +110,27 @@ def sohbet():
             hata="Geçerli bir JSON nesnesi gönderilmelidir.",
         ), 400
 
-    mesaj = data.get("mesaj")
-    if not isinstance(mesaj, str) or not mesaj.strip():
+    try:
+        mesaj = required_text(
+            data.get("mesaj"),
+            "Mesaj",
+            MAX_MESSAGE_LENGTH,
+        )
+        gecmis = chat_history(data.get("gecmis", []))
+        dil = locale(data.get("dil"))
+    except ValidationError as exc:
         return jsonify(
             basari=False,
-            hata="Geçerli bir mesaj gönderilmelidir.",
-        ), 400
-
-    gecmis = data.get("gecmis", [])
-    if gecmis is not None and not isinstance(gecmis, list):
-        return jsonify(
-            basari=False,
-            hata="Sohbet geçmişi liste olmalıdır.",
+            hata=str(exc),
         ), 400
 
     try:
-        cevap = ai_service.yanit_uret(mesaj.strip(), gecmis)
-    except AIServiceError:
+        cevap = ai_service.yanit_uret(mesaj, gecmis, dil=dil)
+    except AIServiceError as exc:
+        current_app.logger.warning(
+            "ASGARDIAN provider failure: %s",
+            exc.__class__.__name__,
+        )
         return jsonify(
             basari=False,
             hata="Yapay zeka hizmetine şu anda ulaşılamıyor.",
@@ -125,35 +148,36 @@ def lead_olustur():
             hata="Geçerli bir JSON nesnesi gönderilmelidir.",
         ), 400
 
-    isim = data.get("isim")
-    telefon = data.get("telefon")
-    mesaj = data.get("mesaj")
-
-    if (
-        not isinstance(isim, str)
-        or not isim.strip()
-        or not isinstance(telefon, str)
-        or not telefon.strip()
-    ):
+    try:
+        isim = required_text(data.get("isim"), "İsim", MAX_NAME_LENGTH)
+        telefon = required_text(
+            data.get("telefon"),
+            "Telefon",
+            MAX_PHONE_LENGTH,
+        )
+        mesaj = optional_text(
+            data.get("mesaj"),
+            "Mesaj",
+            MAX_LEAD_MESSAGE_LENGTH,
+        )
+    except ValidationError as exc:
         return jsonify(
             basari=False,
-            hata="İsim ve telefon alanları zorunludur.",
-        ), 400
-
-    if mesaj is not None and not isinstance(mesaj, str):
-        return jsonify(
-            basari=False,
-            hata="Mesaj metin olmalıdır.",
+            hata=str(exc),
         ), 400
 
     try:
-        inserted_id = lead_ekle(isim.strip(), telefon.strip(), mesaj)
+        inserted_id = lead_ekle(isim, telefon, mesaj)
     except ValueError:
         return jsonify(
             basari=False,
             hata="İsim ve telefon alanları zorunludur.",
         ), 400
-    except DatabaseError:
+    except DatabaseError as exc:
+        current_app.logger.error(
+            "Lead persistence failure: %s",
+            exc.__class__.__name__,
+        )
         return jsonify(
             basari=False,
             hata="Kayıt işlemi şu anda tamamlanamadı.",
@@ -167,7 +191,11 @@ def lead_olustur():
 def leadleri_listele():
     try:
         leadler = tum_leadler()
-    except DatabaseError:
+    except DatabaseError as exc:
+        current_app.logger.error(
+            "Lead listing failure: %s",
+            exc.__class__.__name__,
+        )
         return jsonify(
             basari=False,
             hata="Kayıtlar şu anda alınamıyor.",

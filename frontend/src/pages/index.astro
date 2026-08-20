@@ -1,0 +1,316 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getHomeContent } from '../lib/cms';
+import { resolveWixImageUrl } from '../utils/wix-image';
+
+type Locale = 'en' | 'tr';
+interface Props { locale?: Locale; }
+const { locale = 'en' } = Astro.props;
+const isTurkish = locale === 'tr';
+const base = isTurkish ? '/tr' : '';
+const isLocalHost = Astro.url.hostname === 'localhost' || Astro.url.hostname === '127.0.0.1';
+const publicOrigin = isLocalHost ? Astro.url.origin : `https://${Astro.url.host}`;
+const fallbackCopy = isTurkish
+  ? {
+      title: 'Mühendislik Zekâsı',
+      description: 'AESIR AXIOM; ileri mühendislik sistemleri, akıllı yazılım, otomasyon, araştırma ve uygulamalı yapay zekâ geliştirir.',
+      heroEyebrow: '01 / Mühendislik zekâsı',
+      heroTitle: 'Ufkun Ötesinde',
+      heroTitleSecond: 'Mühendislik',
+      heroLede: 'AESIR AXIOM, karmaşık teknolojileri gerçek dünyada güvenilir kılmak için ileri mühendisliği, akıllı sistemleri ve uygulamalı araştırmayı bir araya getirir.',
+      heroCta: 'Yetkinlikleri keşfedin',
+      aboutEyebrow: '02 / Aksiyom',
+      aboutTitle: 'Fikirlerin gerçek dünya sonuçlarıyla buluştuğu nokta için tasarlandı.',
+      aboutFirst: 'AESIR AXIOM çok disiplinli bir mühendislik ve teknoloji şirketidir. İleri mühendislik, güvenilir yazılım, veri, yapay zekâ, otomasyon, araştırma ve simülasyon alanlarında çalışırız.',
+      aboutSecond: 'Çalışmalarımızı tek bir ölçüt tanımlar: karmaşık teknoloji, önemli olduğu ortamlarda daha anlaşılır, yetkin ve güvenilir hâle gelmelidir.',
+      aboutLink: 'Yaklaşımımız',
+      capabilitiesEyebrow: '03 / Yetkinlik alanı',
+      capabilitiesTitle: 'Operasyonel odağı olan yetkinlik.',
+      capabilitiesIntro: 'Karmaşık sorunları ele alırken sorumluluğu dağıtmayan, birlikte çalışan disiplinler.',
+      technologyEyebrow: '04 / Sistem mimarisi',
+      technologyTitle: 'Mühendislikten daha iyi kararlara.',
+      technologyIntro: 'Mimarimiz, teknik değer zincirinin tüm halkalarını birbirine bağlar; hiçbir halkayı sonradan eklenen bir ayrıntı olarak görmez.',
+      principlesEyebrow: '05 / İlkeler',
+      principlesTitle: 'Üretmenin disiplinli yolu.',
+      projectsEyebrow: '06 / Proje ufukları',
+      projectsTitle: 'Şablona değil, bağlama göre şekillenen çalışma.',
+      projectsIntro: 'Seçili çalışma alanları. Ayrıntılar; ilgili sistemler, koşullar ve sorumluluklar doğrultusunda tanımlanır.',
+      researchEyebrow: '07 / Araştırma vektörü',
+      researchTitle: 'Bilinenin ötesinde,',
+      researchTitleSecond: 'faydalı olana doğru.',
+      researchBody: 'AESIR AXIOM araştırmaları; simülasyon, akıllı otonomi, dayanıklı sistemler ve insan muhakemesi ile makine yetkinliği arasındaki arayüzlerde uygulamaya dönük sınırı inceler.',
+      researchCta: 'Teknik bir görüşme başlatın',
+      contactEyebrow: '08 / İletişim',
+      contactTitle: 'Karmaşıklığı sonuç üreten bir güce dönüştürün.',
+      contactBody: 'Mühendislik problemleri, araştırma girişimleri ve beklenen ufkun ötesinde çalışması gereken sistemler için.',
+      contactCta: 'AESIR AXIOM ile iletişime geçin',
+      architectureAlt: 'Karanlık bir alanda yükselen soyut mühendislik mimarisi',
+    }
+  : {
+      title: 'Engineering Intelligence',
+      description: 'AESIR AXIOM develops advanced engineering systems, intelligent software, automation, research, and applied AI for dependable real-world technology.',
+      heroEyebrow: '01 / Engineering intelligence',
+      heroTitle: 'Engineering',
+      heroTitleSecond: 'Beyond the Horizon',
+      heroLede: 'AESIR AXIOM unites advanced engineering, intelligent systems, and applied research to make complex technology dependable in the real world.',
+      heroCta: 'Explore capability',
+      aboutEyebrow: '02 / The axiom',
+      aboutTitle: 'Built for the point where ideas meet consequence.',
+      aboutFirst: 'AESIR AXIOM is a multidisciplinary engineering and technology company. We work across advanced engineering, reliable software, data, artificial intelligence, automation, research, and simulation.',
+      aboutSecond: 'Our work is defined by a simple standard: complex technology should become more legible, capable, and dependable in the places it matters.',
+      aboutLink: 'Our approach',
+      capabilitiesEyebrow: '03 / Capability field',
+      capabilitiesTitle: 'Capability with an operational center.',
+      capabilitiesIntro: 'Disciplines assembled to meet complex challenges without dissolving accountability.',
+      technologyEyebrow: '04 / System architecture',
+      technologyTitle: 'From engineered matter to better decisions.',
+      technologyIntro: 'Our architecture connects the full chain of technical value, without treating any link as an afterthought.',
+      principlesEyebrow: '05 / Principles',
+      principlesTitle: 'A disciplined way of making.',
+      projectsEyebrow: '06 / Project horizons',
+      projectsTitle: 'Work shaped by context, not a template.',
+      projectsIntro: 'Selected categories of work. Details are defined by the systems, conditions, and responsibilities involved.',
+      researchEyebrow: '07 / Research vector',
+      researchTitle: 'Beyond the known,',
+      researchTitleSecond: 'toward the useful.',
+      researchBody: 'Research at AESIR AXIOM explores the practical frontier: simulation, intelligent autonomy, resilient systems, and the interfaces between human judgment and machine capability.',
+      researchCta: 'Begin a technical conversation',
+      contactEyebrow: '08 / Contact',
+      contactTitle: 'Make the complex consequential.',
+      contactBody: 'For engineering challenges, research initiatives, and systems that need to work beyond the expected horizon.',
+      contactCta: 'Contact AESIR AXIOM',
+      architectureAlt: 'Abstract engineering architecture ascending through a dark field',
+    };
+
+const fallbackCapabilities = isTurkish ? [
+  ['01', 'İleri Mühendislik', 'Fiziksel kısıtlardan devreye almaya uzanan; güvenilirliği ilk karardan itibaren tasarlanmış sistemler.'],
+  ['02', 'Akıllı Yazılım', 'Mühendislere, operatörlere ve sistemlere güvenilir bir ortak dil kazandıran amaca özel yazılım.'],
+  ['03', 'Veri ve Analitik', 'Verinin güven kazanması gereken karmaşık ortamlar için sinyal çıkarımı ve operasyonel bağlam.'],
+  ['04', 'Uygulamalı Yapay Zekâ', 'Mühendislik muhakemesi ve ölçülebilir faydayla sınırlandırılarak gerçek iş akışlarına entegre edilen modeller.'],
+  ['05', 'Otomasyon ve Kontrol', 'Süreci, gözetimi ve insanlarla makinelerin operasyonel gerçeklerini dikkate alan otomasyon.'],
+  ['06', 'Simülasyon ve Araştırma', 'Belirsizliği yön duygusuna dönüştüren deneysel sistemler ve teknik araştırma.'],
+] : [
+  ['01', 'Advanced Engineering', 'Systems conceived from physical constraint through deployment, with reliability designed into the first decision.'],
+  ['02', 'Intelligent Software', 'Purpose-built software that gives engineers, operators, and systems a dependable common language.'],
+  ['03', 'Data & Analytics', 'Signal extraction and operational context for complex environments where data must earn trust.'],
+  ['04', 'Applied AI', 'Models integrated with real workflows, bounded by engineering judgment and measurable utility.'],
+  ['05', 'Automation & Control', 'Automation that respects process, oversight, and the operational realities of people and machines.'],
+  ['06', 'Simulation & Research', 'Experimental systems and technical inquiry that convert uncertainty into direction.'],
+];
+const fallbackPrinciples = isTurkish ? [
+  ['01', 'Söylemden önce gerçeklik', 'Her öneri, çalışmak zorunda olduğu koşullara göre sınanır.'],
+  ['02', 'Silolar değil sistemler', 'Donanım, yazılım, veri ve insanlar tek bir işleyen bütün olarak tasarlanır.'],
+  ['03', 'Tasarım yoluyla güvence', 'İzlenebilirlik, dayanıklılık ve insan gözetimi sonradan eklenen değil, temel unsurlardır.'],
+  ['04', 'Faydalı zekâ', 'İleri yetkinlik ancak gerçek bir kararı veya eylemi iyileştirdiğinde değer üretir.'],
+  ['05', 'Ufuk disiplini', 'Şimdi çalışan çözümlere karşı sorumluluğumuzu korurken sıradakini araştırırız.'],
+] : [
+  ['01', 'Reality before rhetoric', 'Every proposition is tested against the conditions it must survive.'],
+  ['02', 'Systems, not silos', 'Hardware, software, data, and people are designed as one operating whole.'],
+  ['03', 'Assurance by design', 'Traceability, resilience, and human oversight are integral—not additions.'],
+  ['04', 'Useful intelligence', 'Advanced capability is valuable only when it improves a real decision or action.'],
+  ['05', 'Horizon discipline', 'We investigate what is next while remaining accountable to what works now.'],
+];
+const fallbackProjects = isTurkish ? [
+  ['Otonom operasyonlar', 'Gecikme, belirsizlik ve sonuçların kesiştiği ortamlar için dayanıklı sistemler.'],
+  ['Kritik altyapı', 'Zaman içinde güvenilirliğini koruması gereken varlıklar ve ağlar için mühendislik zekâsı.'],
+  ['Karmaşık endüstriyel sistemler', 'Daha yüksek açıklık, kontrol ve performans için dijital ve fiziksel mimari.'],
+  ['Araştırma platformları', 'Bilinen yetkinliğin sınırında çalışan ekipler için teknik temeller.'],
+] : [
+  ['Autonomous operations', 'Resilient systems for environments where latency, uncertainty, and consequence converge.'],
+  ['Critical infrastructure', 'Engineering intelligence for assets and networks that must remain dependable over time.'],
+  ['Complex industrial systems', 'Digital and physical architecture for higher clarity, control, and performance.'],
+  ['Research platforms', 'Technical foundations for teams working at the edge of known capability.'],
+];
+
+const fallbackArchitecture = isTurkish
+  ? [
+      ['01', 'Mühendislik'],
+      ['02', 'Veri'],
+      ['03', 'Yapay Zekâ'],
+      ['04', 'Otomasyon'],
+      ['05', 'Karar'],
+      ['06', 'Optimizasyon'],
+    ]
+  : [
+      ['01', 'Engineering'],
+      ['02', 'Data'],
+      ['03', 'AI'],
+      ['04', 'Automation'],
+      ['05', 'Decision'],
+      ['06', 'Optimization'],
+    ];
+
+const homeContent = await getHomeContent(locale);
+const section = (sectionKey: string) => homeContent.sections.find((item) => item.sectionKey === sectionKey);
+const value = (candidate: string | undefined, fallback: string) => candidate || fallback;
+const safeHref = (candidate: string | undefined, fallback: string) =>
+  candidate && (candidate.startsWith('/') || candidate.startsWith('#')) ? candidate : fallback;
+
+const heroSection = section('hero');
+const aboutSection = section('about');
+const capabilitiesSection = section('capabilities');
+const technologySection = section('technology');
+const principlesSection = section('principles');
+const projectsSection = section('projects');
+const researchSection = section('research');
+const contactSection = section('contact');
+
+const copy = {
+  ...fallbackCopy,
+  heroEyebrow: value(heroSection?.eyebrow, fallbackCopy.heroEyebrow),
+  heroTitle: value(heroSection?.title, fallbackCopy.heroTitle),
+  heroTitleSecond: value(heroSection?.titleSecond, fallbackCopy.heroTitleSecond),
+  heroLede: value(heroSection?.body, fallbackCopy.heroLede),
+  heroCta: value(heroSection?.ctaLabel, fallbackCopy.heroCta),
+  aboutEyebrow: value(aboutSection?.eyebrow, fallbackCopy.aboutEyebrow),
+  aboutTitle: value(aboutSection?.title, fallbackCopy.aboutTitle),
+  aboutFirst: value(aboutSection?.body, fallbackCopy.aboutFirst),
+  aboutSecond: value(aboutSection?.bodySecondary, fallbackCopy.aboutSecond),
+  aboutLink: value(aboutSection?.ctaLabel, fallbackCopy.aboutLink),
+  capabilitiesEyebrow: value(capabilitiesSection?.eyebrow, fallbackCopy.capabilitiesEyebrow),
+  capabilitiesTitle: value(capabilitiesSection?.title, fallbackCopy.capabilitiesTitle),
+  capabilitiesIntro: value(capabilitiesSection?.body, fallbackCopy.capabilitiesIntro),
+  technologyEyebrow: value(technologySection?.eyebrow, fallbackCopy.technologyEyebrow),
+  technologyTitle: value(technologySection?.title, fallbackCopy.technologyTitle),
+  technologyIntro: value(technologySection?.body, fallbackCopy.technologyIntro),
+  architectureAlt: value(technologySection?.imageAlt, fallbackCopy.architectureAlt),
+  principlesEyebrow: value(principlesSection?.eyebrow, fallbackCopy.principlesEyebrow),
+  principlesTitle: value(principlesSection?.title, fallbackCopy.principlesTitle),
+  projectsEyebrow: value(projectsSection?.eyebrow, fallbackCopy.projectsEyebrow),
+  projectsTitle: value(projectsSection?.title, fallbackCopy.projectsTitle),
+  projectsIntro: value(projectsSection?.body, fallbackCopy.projectsIntro),
+  researchEyebrow: value(researchSection?.eyebrow, fallbackCopy.researchEyebrow),
+  researchTitle: value(researchSection?.title, fallbackCopy.researchTitle),
+  researchTitleSecond: value(researchSection?.titleSecond, fallbackCopy.researchTitleSecond),
+  researchBody: value(researchSection?.body, fallbackCopy.researchBody),
+  researchCta: value(researchSection?.ctaLabel, fallbackCopy.researchCta),
+  contactEyebrow: value(contactSection?.eyebrow, fallbackCopy.contactEyebrow),
+  contactTitle: value(contactSection?.title, fallbackCopy.contactTitle),
+  contactBody: value(contactSection?.body, fallbackCopy.contactBody),
+  contactCta: value(contactSection?.ctaLabel, fallbackCopy.contactCta),
+};
+
+const group = (groupKey: string) => homeContent.items.filter((item) => item.groupKey === groupKey);
+const cmsCapabilities = group('capabilities').map((item, index) => [item.code || String(index + 1).padStart(2, '0'), item.title, item.body]);
+const cmsPrinciples = group('principles').map((item, index) => [item.code || String(index + 1).padStart(2, '0'), item.title, item.body]);
+const cmsProjects = group('projects').map((item) => [item.title, item.body]);
+const cmsArchitecture = group('architecture').map((item, index) => [item.code || String(index + 1).padStart(2, '0'), item.title]);
+const capabilities = cmsCapabilities.length ? cmsCapabilities : fallbackCapabilities;
+const principles = cmsPrinciples.length ? cmsPrinciples : fallbackPrinciples;
+const projects = cmsProjects.length ? cmsProjects : fallbackProjects;
+const architecture = cmsArchitecture.length ? cmsArchitecture : fallbackArchitecture;
+
+const heroCtaHref = safeHref(heroSection?.ctaHref, '#capabilities');
+const aboutCtaHref = safeHref(aboutSection?.ctaHref, `${base}/about`);
+const researchCtaHref = safeHref(researchSection?.ctaHref, '#contact');
+const contactCtaHref = safeHref(contactSection?.ctaHref, `${base}/contact`);
+const heroImageUrl = resolveWixImageUrl(heroSection?.image, 1672, 941) || '/assets/hero-mountain.webp';
+const technologyImageUrl = resolveWixImageUrl(technologySection?.image, 1672, 941) || '/assets/architecture-ascent.webp';
+const researchImageUrl = resolveWixImageUrl(researchSection?.image, 1672, 941) || '/assets/research-orbit.webp';
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'AESIR AXIOM',
+  description: copy.description,
+  url: new URL('/', publicOrigin).href,
+  logo: new URL('/assets/aesir-axiom-logo.jpeg', publicOrigin).href,
+  inLanguage: locale,
+};
+---
+
+<Layout title={copy.title} description={copy.description} locale={locale}>
+  <Fragment slot="head"><script type="application/ld+json" set:html={JSON.stringify(organization)} /></Fragment>
+
+  <section id="hero" class="hero" aria-labelledby="hero-heading">
+    <div class="hero-media" data-decorative-slot="hero" data-parallax="0.055" aria-hidden="true"><img src={heroImageUrl} alt="" fetchpriority="high" decoding="async" /></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <img class="hero-emblem" src="/assets/aesir-axiom-emblem.png" alt="" width="900" height="808" aria-hidden="true" />
+    <div class="shell hero-content" data-reveal>
+      <p class="eyebrow">{copy.heroEyebrow}</p>
+      <h1 id="hero-heading">{copy.heroTitle}<br />{copy.heroTitleSecond}</h1>
+      <p class="lede">{copy.heroLede}</p>
+      <div class="hero-actions"><a class="axis-link" href={heroCtaHref}>{copy.heroCta} <span aria-hidden="true">↓</span></a><span class="coordinate">N 64° 08′ / E 021° 56′</span></div>
+    </div>
+    <span class="hero-index" aria-hidden="true">AA / 01</span>
+  </section>
+
+  <section id="about" class="section about" aria-labelledby="about-heading">
+    <div class="shell two-col">
+      <div data-reveal><p class="eyebrow">{copy.aboutEyebrow}</p><h2 id="about-heading">{copy.aboutTitle}</h2></div>
+      <div class="about-copy" data-reveal>
+        <div class="about-mark" data-decorative-slot="about" aria-hidden="true"><img src="/assets/aesir-axiom-emblem.png" class="watermark" alt="" width="420" height="420" loading="lazy" /></div>
+        <p>{copy.aboutFirst}</p>
+        <p>{copy.aboutSecond}</p>
+        <a class="text-link" href={aboutCtaHref}>{copy.aboutLink} <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="capabilities" class="section" aria-labelledby="capabilities-heading">
+    <div class="shell"><div class="heading" data-reveal><div><p class="eyebrow">{copy.capabilitiesEyebrow}</p><h2 id="capabilities-heading">{copy.capabilitiesTitle}</h2></div><p>{copy.capabilitiesIntro}</p></div>
+      <ol class="capability-grid">{capabilities.map(([number, title, description]) => <li class="capability" data-reveal><span>{number}</span><h3>{title}</h3><p>{description}</p><b aria-hidden="true">↗</b></li>)}</ol>
+    </div>
+  </section>
+
+  <section id="technology" class="section technology" aria-labelledby="technology-heading">
+    <div class="technology-media"><img src={technologyImageUrl} alt={copy.architectureAlt} loading="lazy" decoding="async" /></div>
+    <div class="shell two-col technology-content">
+      <div data-reveal><p class="eyebrow">{copy.technologyEyebrow}</p><h2 id="technology-heading">{copy.technologyTitle}</h2><p class="support">{copy.technologyIntro}</p></div>
+      <ol class="architecture" data-reveal>{architecture.map(([number, title], index) => <li><span>{number}</span><strong>{title}</strong>{index < architecture.length - 1 && <i></i>}</li>)}</ol>
+    </div>
+  </section>
+
+  <section id="principles" class="section principles" aria-labelledby="principles-heading">
+    <div class="shell"><div data-reveal><p class="eyebrow">{copy.principlesEyebrow}</p><h2 id="principles-heading">{copy.principlesTitle}</h2></div>
+      <ol class="principle-list">{principles.map(([number, title, description]) => <li data-reveal><span>{number}</span><h3>{title}</h3><p>{description}</p></li>)}</ol>
+    </div>
+  </section>
+
+  <section id="projects" class="section" aria-labelledby="projects-heading">
+    <div class="shell"><div class="heading" data-reveal><div><p class="eyebrow">{copy.projectsEyebrow}</p><h2 id="projects-heading">{copy.projectsTitle}</h2></div><p>{copy.projectsIntro}</p></div>
+      <div class="project-grid">{projects.map(([title, description], index) => <article data-reveal><span>0{index + 1}</span><h3>{title}</h3><p>{description}</p><i aria-hidden="true"></i></article>)}</div>
+    </div>
+  </section>
+
+  <section id="research" class="section research" aria-labelledby="research-heading">
+    <div class="research-media" data-parallax="0.035" aria-hidden="true"><img src={researchImageUrl} alt="" loading="lazy" decoding="async" /></div>
+    <div class="shell research-copy" data-reveal><p class="eyebrow">{copy.researchEyebrow}</p><h2 id="research-heading">{copy.researchTitle}<br />{copy.researchTitleSecond}</h2><p>{copy.researchBody}</p><a class="axis-link" href={researchCtaHref}>{copy.researchCta} <span aria-hidden="true">↗</span></a></div>
+  </section>
+
+  <section id="contact" class="section contact" aria-labelledby="contact-heading">
+    <div class="shell contact-copy" data-reveal><img src="/assets/aesir-axiom-logo.jpeg" alt="AESIR AXIOM" width="360" height="160" loading="lazy" /><p class="eyebrow">{copy.contactEyebrow}</p><h2 id="contact-heading">{copy.contactTitle}</h2><p>{copy.contactBody}</p><a class="contact-cta" href={contactCtaHref}>{copy.contactCta} <span aria-hidden="true">→</span></a></div>
+  </section>
+</Layout>
+
+<script>
+  const initMotion = () => {
+    const runtime = window as Window & { __aesirMotionAbort?: AbortController };
+    runtime.__aesirMotionAbort?.abort();
+    const controller = new AbortController();
+    runtime.__aesirMotionAbort = controller;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reveals = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    if (reduced) { reveals.forEach((element) => element.classList.add('is-visible')); return; }
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { (entry.target as HTMLElement).classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: 0.14 });
+    reveals.forEach((element) => observer.observe(element));
+    const parallax = document.querySelectorAll<HTMLElement>('[data-parallax]');
+    let frame = 0;
+    const update = () => { frame = 0; parallax.forEach((element) => { const rate = Number(element.dataset.parallax || 0); element.style.transform = `translate3d(0, ${(element.getBoundingClientRect().top - innerHeight * .5) * rate}px, 0)`; }); };
+    const scroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update(); window.addEventListener('scroll', scroll, { passive: true, signal: controller.signal });
+  };
+  document.addEventListener('astro:page-load', initMotion); initMotion();
+</script>
+
+<style>
+  :global(html) { scroll-behavior: smooth; } .shell { width: min(100% - 3rem, var(--container-6xl)); margin: auto; } .section { position: relative; padding: clamp(5.5rem, 11vw, 10rem) 0; overflow: clip; } .eyebrow { margin: 0 0 1.35rem; color: var(--color-accent); font: .7rem/1.3 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; } h2 { max-width: 16ch; font-size: clamp(2.35rem, 4.8vw, 5.25rem); letter-spacing: -.035em; } [data-reveal] { opacity: 0; transform: translateY(1.2rem); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); } [data-reveal].is-visible { opacity: 1; transform: none; }
+  .hero { position: relative; min-height: min(52rem, 92vh); display: grid; align-items: end; isolation: isolate; border-bottom: 1px solid var(--color-rule); overflow: hidden; } .hero-media, .research-media { position: absolute; inset: -5%; z-index: -2; will-change: transform; } .hero-media img, .research-media img { width: 100%; height: 100%; object-fit: cover; object-position: 70% center; } .hero-media::after, .research-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,#0f141d 3%,rgba(15,20,29,.82) 35%,rgba(15,20,29,.2) 70%,#0f141d),linear-gradient(0deg,#0f141d,transparent 50%); } .hero-grid { position: absolute; inset: 0; z-index: -1; opacity: .18; background-image: linear-gradient(var(--color-rule) 1px,transparent 1px),linear-gradient(90deg,var(--color-rule) 1px,transparent 1px); background-size: 7rem 7rem; mask-image: linear-gradient(90deg,#000,transparent 72%); } .hero-emblem { position: absolute; z-index: -1; top: 50%; right: clamp(1rem,6vw,7rem); width: clamp(18rem,36vw,38rem); opacity: .08; transform: translateY(-50%); filter: saturate(.7); pointer-events: none; } .hero-content { padding: clamp(7rem,14vw,12rem) 0 clamp(4rem,9vw,7rem); } .hero h1 { max-width: 11ch; font-size: clamp(3.4rem,8.2vw,8.6rem); letter-spacing: -.055em; } .lede { max-width: 36rem; margin-top: 2rem; color: var(--color-ink-soft); font-size: clamp(1rem,1.5vw,1.2rem); line-height: 1.7; } .hero-actions { display: flex; gap: 2rem; align-items: center; margin-top: 2.6rem; } .axis-link,.contact-cta { display: inline-flex; gap: .8rem; align-items: center; padding: .8rem 0; border-bottom: 1px solid var(--color-accent); color: var(--color-ink); font: .72rem/1 var(--font-mono); letter-spacing: .11em; text-transform: uppercase; transition: color .18s,gap .18s; } .axis-link:hover,.contact-cta:hover { gap: 1.15rem; color: var(--color-accent); } .coordinate,.hero-index { color: var(--color-mute); font: .65rem var(--font-mono); letter-spacing: .08em; } .hero-index { position: absolute; right: 5vw; bottom: 1.5rem; }
+  .two-col { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(3rem,10vw,10rem); } .about { background: #101922; border-bottom: 1px solid var(--color-rule); } .about-copy { position: relative; display: grid; gap: 1.3rem; max-width: 42rem; color: var(--color-ink-soft); font-size: 1.1rem; line-height: 1.75; } .about-mark { position: absolute; width: 17rem; height: 7rem; right: -2rem; top: -5rem; opacity: .075; mix-blend-mode: screen; pointer-events: none; } .watermark { width: 100%; height: 100%; object-fit: contain; } .text-link { width: fit-content; margin-top: .6rem; color: var(--color-accent); font: .72rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+  .heading { display: grid; grid-template-columns: 1.3fr .7fr; gap: 2rem; align-items: end; margin-bottom: clamp(3rem,7vw,6rem); } .heading > p { color: var(--color-ink-soft); line-height: 1.7; } .capability-grid { display: grid; grid-template-columns: repeat(3,1fr); border-top: 1px solid var(--color-rule); border-left: 1px solid var(--color-rule); } .capability { position: relative; min-height: 19rem; padding: 1.5rem; border-right: 1px solid var(--color-rule); border-bottom: 1px solid var(--color-rule); transition: background-color .24s; } .capability:hover { background: var(--color-paper-warm); } .capability > span,.project-grid span,.principle-list span { color: var(--color-accent); font: .68rem var(--font-mono); letter-spacing: .11em; } .capability h3 { margin: 4.4rem 0 .9rem; font-size: 1.45rem; } .capability p,.project-grid p { max-width: 32ch; color: var(--color-ink-soft); font-size: .92rem; line-height: 1.65; } .capability b { position: absolute; right: 1.5rem; bottom: 1.3rem; color: var(--color-mute); font-size: 1.5rem; }
+  .technology { min-height: 48rem; background: #0c1118; border-block: 1px solid var(--color-rule); } .technology-media { position: absolute; inset: 0 0 0 48%; opacity: .48; } .technology-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,#0c1118,rgba(12,17,24,.55) 42%,#0c1118); } .technology-media img { width: 100%; height: 100%; object-fit: cover; } .technology-content { position: relative; z-index: 1; } .support { max-width: 32rem; margin-top: 1.5rem; color: var(--color-ink-soft); line-height: 1.7; } .architecture { display: grid; align-content: start; margin-top: .7rem; border-top: 1px solid var(--color-rule); } .architecture li { display: grid; grid-template-columns: 3rem 1fr 3.25rem; align-items: center; min-height: 4.2rem; border-bottom: 1px solid var(--color-rule); } .architecture span { color: var(--color-accent); font: .67rem var(--font-mono); } .architecture strong { font-family: var(--font-display); font-size: 1.5rem; font-weight: 400; } .architecture i,.project-grid i { width: 100%; height: 1px; background: var(--color-accent); transform: scaleX(.35); transform-origin: right; transition: transform .25s; } .architecture li:hover i { transform: scaleX(1); }
+  .principles { background: #121c26; } .principle-list { margin-top: 3rem; border-top: 1px solid var(--color-rule); } .principle-list li { display: grid; grid-template-columns: 7rem .8fr 1fr; gap: 1rem; padding: 1.5rem 0; border-bottom: 1px solid var(--color-rule); } .principle-list h3 { font-size: 1.3rem; } .principle-list p { max-width: 38rem; color: var(--color-ink-soft); line-height: 1.6; } .project-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: var(--color-rule); border: 1px solid var(--color-rule); } .project-grid article { position: relative; min-height: 16rem; padding: 1.7rem; background: var(--color-paper); transition: background-color .2s; } .project-grid article:hover { background: #13202a; } .project-grid h3 { max-width: 15ch; margin: 3rem 0 .8rem; font-size: 1.45rem; } .project-grid i { position: absolute; right: 1.7rem; bottom: 1.7rem; width: 2rem; transform: none; }
+  .research { min-height: 42rem; display: grid; align-items: center; isolation: isolate; } .research-copy { max-width: 47rem; padding: 5rem 0; } .research-copy > p:not(.eyebrow),.contact-copy > p:not(.eyebrow) { max-width: 42rem; margin: 1.6rem 0 2rem; color: var(--color-ink-soft); line-height: 1.75; } .contact { text-align: center; background: #0a0f15; } .contact-copy { display: grid; justify-items: center; } .contact-copy img { width: min(18rem,60vw); margin-bottom: 2rem; mix-blend-mode: screen; } .contact-cta { padding: 1rem 1.25rem; border: 1px solid var(--color-accent); }
+  @media (max-width: 800px) { .shell { width: min(100% - 2rem,var(--container-6xl)); } .hero { min-height: 43rem; } .hero-media { inset: 0; } .hero-media::after { background: linear-gradient(90deg,#0f141d,rgba(15,20,29,.72)),linear-gradient(0deg,#0f141d,transparent 55%); } .hero-actions { align-items: flex-start; flex-direction: column; gap: 1rem; } .two-col,.heading { grid-template-columns: 1fr; } .capability-grid,.project-grid { grid-template-columns: 1fr; } .capability { min-height: 14.5rem; } .technology { min-height: auto; } .technology-media { inset: 0; opacity: .25; } .technology-media::after { background: rgba(12,17,24,.65); } .principle-list li { grid-template-columns: 3rem 1fr; } .principle-list p { grid-column: 2; } }
+  @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } .hero-media,.research-media { transform: none !important; } }
+</style>

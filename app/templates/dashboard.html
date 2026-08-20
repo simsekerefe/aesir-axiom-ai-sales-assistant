@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>ASGARDIAN Control / Lead Yönetimi</title>
-  <style>
+  <style nonce="{{ csp_nonce }}">
     :root { color-scheme:dark; --bg:#0f141d; --blue:#1e3a4d; --steel:#6e7d8a; --gold:#d4af37; --white:#f5f7fa; --muted:#c9d1d8; --line:rgba(110,125,138,.32); }
     * { box-sizing:border-box; }
     body { margin:0; background:var(--bg); color:var(--white); font:14px/1.5 Inter,ui-sans-serif,system-ui,sans-serif; }
@@ -21,20 +21,28 @@
     h1 { margin:.5rem 0 0; font:400 clamp(36px,6vw,70px)/1 Georgia,serif; letter-spacing:.02em; }
     .count { font:400 clamp(46px,7vw,84px)/.9 ui-monospace,monospace; color:var(--gold); text-align:right; }
     .count small { display:block; margin-top:12px; color:var(--steel); font-size:10px; letter-spacing:.14em; }
+    .metrics { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); margin-bottom:22px; }
+    .metric { min-height:108px; padding:17px; border-right:1px solid var(--line); }
+    .metric:last-child { border-right:0; }
+    .metric span { display:block; color:var(--steel); font:10px ui-monospace,monospace; letter-spacing:.12em; }
+    .metric strong { display:block; margin-top:20px; color:var(--white); font:400 28px ui-monospace,monospace; }
     .controls { display:flex; gap:12px; flex-wrap:wrap; padding:18px; border:1px solid var(--line); border-bottom:0; background:rgba(30,58,77,.18); }
     .search { flex:1 1 300px; min-height:44px; border:1px solid var(--line); border-radius:2px; background:#0b1017; color:var(--white); padding:0 14px; }
-    .search:focus { outline:2px solid rgba(212,175,55,.38); border-color:var(--gold); }
-    .refresh { min-height:44px; padding:0 18px; border:1px solid var(--gold); background:transparent; color:var(--gold); cursor:pointer; }
+    .search:focus,.source-filter:focus { outline:2px solid rgba(212,175,55,.38); border-color:var(--gold); }
+    .source-filter { min-height:44px; border:1px solid var(--line); background:#0b1017; color:var(--white); padding:0 36px 0 12px; }
+    .refresh,.export { min-height:44px; padding:0 18px; border:1px solid var(--gold); background:transparent; color:var(--gold); cursor:pointer; }
+    .export { border-color:var(--line); color:var(--white); }
     .table-wrap { overflow:auto; border:1px solid var(--line); }
     table { width:100%; min-width:860px; border-collapse:collapse; }
     th { color:var(--steel); font:600 10px ui-monospace,monospace; letter-spacing:.12em; text-align:left; text-transform:uppercase; background:#101720; }
     th,td { padding:16px 18px; border-bottom:1px solid var(--line); vertical-align:top; }
     tbody tr:hover { background:rgba(30,58,77,.2); }
     td:first-child { color:var(--gold); font-family:ui-monospace,monospace; }
+    .source { display:inline-block; padding:4px 7px; border:1px solid var(--line); color:var(--muted); font:10px ui-monospace,monospace; letter-spacing:.08em; }
     .empty,.status { padding:34px; border:1px solid var(--line); color:var(--muted); text-align:center; }
     .error { color:#ffd7d3; border-color:#9e514d; }
     [hidden] { display:none!important; }
-    @media (max-width:700px) { header { align-items:flex-start; padding-block:18px; } .brand,.session { flex-direction:column; align-items:flex-start; gap:4px; } .intro { grid-template-columns:1fr; } .count { text-align:left; } }
+    @media (max-width:700px) { header { align-items:flex-start; padding-block:18px; } .brand,.session { flex-direction:column; align-items:flex-start; gap:4px; } .intro { grid-template-columns:1fr; } .count { text-align:left; } .metrics { grid-template-columns:repeat(2,1fr); } .metric:nth-child(2) { border-right:0; } .metric:nth-child(-n+2) { border-bottom:1px solid var(--line); } }
   </style>
 </head>
 <body>
@@ -53,23 +61,37 @@
       <div><div class="meta">INTELLIGENCE LAYER / LEAD OPERATIONS</div><h1 id="page-title">Müşteri Adayları</h1></div>
       <div class="count"><span id="lead-count">—</span><small>TOPLAM KAYIT</small></div>
     </section>
+    <section class="metrics" aria-label="Lead kaynak özeti">
+      <article class="metric"><span>TOPLAM</span><strong id="metric-total">—</strong></article>
+      <article class="metric"><span>İLETİŞİM FORMU</span><strong id="metric-contact">—</strong></article>
+      <article class="metric"><span>ASGARDIAN</span><strong id="metric-asgardian">—</strong></article>
+      <article class="metric"><span>DİĞER / ESKİ</span><strong id="metric-other">—</strong></article>
+    </section>
     {% if page_error %}<div class="status error" role="alert">{{ page_error }}</div>{% endif %}
     <div class="controls">
       <label for="lead-search" class="meta">KAYITLARDA ARA</label>
       <input id="lead-search" class="search" type="search" placeholder="İsim, telefon veya mesaj" autocomplete="off">
+      <label for="source-filter" class="meta">KAYNAK</label>
+      <select id="source-filter" class="source-filter">
+        <option value="all">Tüm kaynaklar</option>
+        <option value="contact">İletişim formu</option>
+        <option value="asgardian">ASGARDIAN</option>
+        <option value="other">Diğer / eski kayıt</option>
+      </select>
       <button id="refresh" class="refresh" type="button">Yenile</button>
+      <button id="export" class="export" type="button">CSV Dışa Aktar</button>
     </div>
     <div id="loading" class="status" role="status">Kayıtlar güvenli API üzerinden alınıyor…</div>
     <div id="error" class="status error" role="alert" hidden></div>
     <div id="empty" class="empty" hidden>Henüz müşteri adayı kaydı yok.</div>
     <div id="table-wrap" class="table-wrap" hidden>
       <table>
-        <thead><tr><th>ID</th><th>İsim</th><th>Telefon</th><th>Mesaj / İhtiyaç</th><th>Tarih</th></tr></thead>
+        <thead><tr><th>ID</th><th>Kaynak</th><th>İsim</th><th>Telefon</th><th>Mesaj / İhtiyaç</th><th>Tarih</th></tr></thead>
         <tbody id="lead-rows"></tbody>
       </table>
     </div>
   </main>
-  <script>
+  <script nonce="{{ csp_nonce }}">
     const state = { leads: [] };
     const rows = document.getElementById('lead-rows');
     const count = document.getElementById('lead-count');
@@ -78,6 +100,12 @@
     const empty = document.getElementById('empty');
     const table = document.getElementById('table-wrap');
     const search = document.getElementById('lead-search');
+    const sourceFilter = document.getElementById('source-filter');
+
+    function sourceOf(lead) {
+      const match = String(lead.mesaj || '').match(/^\[SOURCE \/ (CONTACT|ASGARDIAN)\]/i);
+      return match ? match[1].toLocaleLowerCase('en') : 'other';
+    }
 
     function textCell(value) {
       const cell = document.createElement('td');
@@ -87,17 +115,47 @@
 
     function render() {
       const term = search.value.trim().toLocaleLowerCase('tr');
-      const filtered = state.leads.filter((lead) => [lead.isim, lead.telefon, lead.mesaj]
-        .some((value) => String(value || '').toLocaleLowerCase('tr').includes(term)));
+      const selectedSource = sourceFilter.value;
+      const filtered = state.leads.filter((lead) =>
+        (selectedSource === 'all' || sourceOf(lead) === selectedSource) &&
+        [lead.isim, lead.telefon, lead.mesaj]
+          .some((value) => String(value || '').toLocaleLowerCase('tr').includes(term)));
       rows.replaceChildren();
       for (const lead of filtered) {
         const row = document.createElement('tr');
-        row.append(textCell(lead.id), textCell(lead.isim), textCell(lead.telefon), textCell(lead.mesaj), textCell(new Date(lead.tarih).toLocaleString('tr-TR')));
+        const sourceCell = document.createElement('td');
+        const badge = document.createElement('span');
+        badge.className = 'source';
+        badge.textContent = sourceOf(lead).toLocaleUpperCase('tr');
+        sourceCell.appendChild(badge);
+        row.append(textCell(lead.id), sourceCell, textCell(lead.isim), textCell(lead.telefon), textCell(lead.mesaj), textCell(new Date(lead.tarih).toLocaleString('tr-TR')));
         rows.appendChild(row);
       }
       count.textContent = state.leads.length;
+      document.getElementById('metric-total').textContent = state.leads.length;
+      for (const source of ['contact', 'asgardian', 'other']) {
+        document.getElementById(`metric-${source}`).textContent = state.leads.filter((lead) => sourceOf(lead) === source).length;
+      }
       empty.hidden = filtered.length !== 0;
       table.hidden = filtered.length === 0;
+    }
+
+    function csvValue(value) {
+      let normalized = value == null ? '' : String(value);
+      if (/^[=+\-@]/.test(normalized)) normalized = `'${normalized}`;
+      return `"${normalized.replaceAll('"', '""')}"`;
+    }
+
+    function exportCsv() {
+      const header = ['ID', 'Kaynak', 'İsim', 'Telefon', 'Mesaj', 'Tarih'];
+      const body = state.leads.map((lead) => [lead.id, sourceOf(lead), lead.isim, lead.telefon, lead.mesaj, lead.tarih]);
+      const csv = [header, ...body].map((line) => line.map(csvValue).join(',')).join('\r\n');
+      const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `aesir-axiom-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
     }
 
     async function loadLeads() {
@@ -115,7 +173,9 @@
     }
 
     search.addEventListener('input', render);
+    sourceFilter.addEventListener('change', render);
     document.getElementById('refresh').addEventListener('click', loadLeads);
+    document.getElementById('export').addEventListener('click', exportCsv);
     loadLeads();
   </script>
 </body>

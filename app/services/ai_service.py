@@ -10,7 +10,7 @@ class AIService:
     GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
     TIMEOUT = 30
 
-    def yanit_uret(self, mesaj, gecmis=None):
+    def yanit_uret(self, mesaj, gecmis=None, dil="tr"):
         provider = str(
             current_app.config.get("AI_PROVIDER", "groq")
         ).strip().lower()
@@ -29,7 +29,7 @@ class AIService:
         if not model:
             raise AIServiceError("Yapay zeka modeli yapılandırılmamış.")
 
-        messages = self._build_messages(mesaj, gecmis)
+        messages = self._build_messages(mesaj, gecmis, dil=dil)
         return self._call_groq(api_key, model, messages)
 
     def _get_system_prompt(self):
@@ -40,7 +40,7 @@ class AIService:
             )
         return prompt.strip()
 
-    def _build_messages(self, mesaj, gecmis):
+    def _build_messages(self, mesaj, gecmis, dil="tr"):
         if not isinstance(mesaj, str) or not mesaj.strip():
             raise AIServiceError("Kullanıcı mesajı boş olamaz.")
 
@@ -49,9 +49,15 @@ class AIService:
         if not isinstance(gecmis, list):
             raise AIServiceError("Sohbet geçmişi liste olmalıdır.")
 
-        messages = [
-            {"role": "system", "content": self._get_system_prompt()}
-        ]
+        language_rule = (
+            "Respond in English unless the user explicitly requests another language."
+            if dil == "en"
+            else "Türkçe yanıt ver; kullanıcı açıkça başka bir dil isterse onu kullan."
+        )
+        messages = [{
+            "role": "system",
+            "content": f"{self._get_system_prompt()}\n\nYanıt dili: {language_rule}",
+        }]
 
         # Clearly malformed history entries are ignored.
         for entry in gecmis:

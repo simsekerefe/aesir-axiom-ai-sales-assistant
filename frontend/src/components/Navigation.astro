@@ -1,0 +1,115 @@
+---
+import type { SiteSettings } from "../lib/cms";
+import { resolveWixImageUrl } from "../utils/wix-image";
+
+type Locale = "en" | "tr";
+
+interface Props {
+  locale?: Locale;
+  settings?: SiteSettings;
+}
+
+const { locale = "en", settings } = Astro.props;
+const isTurkish = locale === "tr";
+const home = isTurkish ? "/tr/" : "/";
+const base = isTurkish ? "/tr" : "";
+const currentEnglishPath = Astro.url.pathname.replace(/^\/tr(?=\/|$)/, "") || "/";
+const englishHref = currentEnglishPath;
+const turkishHref = currentEnglishPath === "/" ? "/tr/" : `/tr${currentEnglishPath}`;
+const fallbackCopy = isTurkish
+  ? {
+      home: "Ana Sayfa",
+      about: "Hakkımızda",
+      capabilities: "Yetkinlikler",
+      technology: "Teknoloji",
+      projects: "Projeler",
+      research: "Araştırma",
+      faq: "SSS",
+      contact: "İletişim",
+      identifier: "Mühendislik Zekâsı",
+      homeLabel: "AESIR AXIOM ana sayfa",
+      toggle: "Gezinmeyi aç veya kapat",
+      language: "Dil seçimi",
+    }
+  : {
+      home: "Home",
+      about: "About",
+      capabilities: "Capabilities",
+      technology: "Technology",
+      projects: "Projects",
+      research: "Research",
+      faq: "FAQ",
+      contact: "Contact",
+      identifier: "Engineering Intelligence",
+      homeLabel: "AESIR AXIOM home",
+      toggle: "Toggle navigation",
+      language: "Language selection",
+    };
+const copy = {
+  ...fallbackCopy,
+  identifier: settings?.brandIdentifier || fallbackCopy.identifier,
+  contact: settings?.contactLabel || fallbackCopy.contact,
+  language: settings?.languageLabel || fallbackCopy.language,
+};
+const brandName = settings?.brandName || "AESIR AXIOM";
+const emblemUrl = resolveWixImageUrl(settings?.emblem, 96, 96) || "/assets/aesir-axiom-emblem.png";
+---
+<header class="site-nav">
+  <nav class="max-w-6xl mx-auto px-lg flex items-center justify-between gap-lg py-md">
+    <a href={home} class="nav-brand" aria-label={copy.homeLabel}>
+      <img src={emblemUrl} alt="" width="48" height="48" />
+      <span class="nav-wordmark"><strong>{brandName}</strong><small>{copy.identifier}</small></span>
+    </a>
+
+    <button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-panel">
+      <span class="block h-[2px] w-6 bg-ink"></span>
+      <span class="block h-[2px] w-6 bg-ink"></span>
+      <span class="block h-[2px] w-6 bg-ink"></span>
+      <span class="sr-only">{copy.toggle}</span>
+    </button>
+
+    <div
+      id="nav-panel"
+      class="nav-panel"
+    >
+      <ul class="flex flex-col md:flex-row gap-md md:gap-lg items-start md:items-center">
+        <li class="site-nav-item"><a href={home}>{copy.home}</a></li>
+        <li class="site-nav-item"><a href={`${base}/about`}>{copy.about}</a></li>
+        <li class="site-nav-item"><a href={`${home}#capabilities`}>{copy.capabilities}</a></li>
+        <li class="site-nav-item"><a href={`${home}#technology`}>{copy.technology}</a></li>
+        <li class="site-nav-item"><a href={`${home}#projects`}>{copy.projects}</a></li>
+        <li class="site-nav-item"><a href={`${home}#research`}>{copy.research}</a></li>
+        <li class="site-nav-item"><a href={`${base}/faq`}>{copy.faq}</a></li>
+        <li class="site-nav-item"><a href={`${base}/contact`}>{copy.contact}</a></li>
+      </ul>
+      <div class="nav-actions locale-switch" role="group" aria-label={copy.language}>
+        <a href={englishHref} lang="en" hreflang="en" aria-current={!isTurkish ? "true" : undefined}>EN</a>
+        <span aria-hidden="true">/</span>
+        <a href={turkishHref} lang="tr" hreflang="tr" aria-current={isTurkish ? "true" : undefined}>TR</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const bindNavigation = () => {
+    const toggle = document.querySelector<HTMLButtonElement>('#nav-toggle');
+    const panel = document.querySelector<HTMLElement>('#nav-panel');
+    if (!toggle || !panel || toggle.dataset.bound === 'true') return;
+
+    toggle.dataset.bound = 'true';
+    const close = () => {
+      toggle.setAttribute('aria-expanded', 'false');
+      panel.classList.remove('is-open');
+    };
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(open));
+      panel.classList.toggle('is-open', open);
+    });
+    panel.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+  };
+
+  document.addEventListener('astro:page-load', bindNavigation);
+  bindNavigation();
+</script>

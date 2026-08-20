@@ -1,0 +1,169 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPageContent } from '../lib/cms';
+
+type Locale = 'en' | 'tr';
+interface Props { locale?: Locale; }
+const { locale = 'en' } = Astro.props;
+const isTurkish = locale === 'tr';
+const fallbackCopy = isTurkish
+  ? {
+      title: 'Sık Sorulan Sorular',
+      description: 'AESIR AXIOM’un mühendislik zekâsı, teknik çalışma alanları ve çalışma modeli hakkında sık sorulan soruların yanıtları.',
+      eyebrow: '01 / Bilgi merkezi',
+      heading: 'Sık sorulan sorular.',
+      introduction: 'AESIR AXIOM’un teknik odağını ve çalışma yaklaşımını anlamak için açık bir başlangıç noktası.',
+      categoriesLabel: 'SSS kategorileri',
+    }
+  : {
+      title: 'Frequently Asked Questions',
+      description: 'Answers to common questions about AESIR AXIOM’s engineering intelligence, technical practice, and ways of working.',
+      eyebrow: '01 / Knowledge base',
+      heading: 'Frequently asked questions.',
+      introduction: 'A clear starting point for understanding AESIR AXIOM’s technical focus and approach.',
+      categoriesLabel: 'FAQ categories',
+    };
+
+interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  orderIndex: number;
+}
+
+function toAnchorId(value: string, fallback: string): string {
+  const normalized = value
+    .toLocaleLowerCase('tr-TR')
+    .replace(/ı/g, 'i')
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  return normalized || fallback;
+}
+
+const fallbackFaqItems: FaqItem[] = isTurkish
+  ? [
+      {
+        id: 'aesir-axiom-nedir',
+        question: 'AESIR AXIOM nedir?',
+        answer: 'AESIR AXIOM; ileri mühendislik sistemleri, yapay zekâ, otomasyon, güvenilir yazılım, araştırma, veri analitiği, simülasyon ve gerçek dünya teknolojileri geliştiren çok disiplinli bir mühendislik ve teknoloji şirketidir.',
+        category: 'Şirket',
+        orderIndex: 0,
+      },
+      {
+        id: 'calisma-alanlari',
+        question: 'AESIR AXIOM hangi alanlarda çalışır?',
+        answer: 'İleri mühendislik sistemleri, yapay zekâ, otomasyon, güvenilir yazılım, araştırma, veri analitiği, simülasyon ve gerçek dünya teknolojileri alanlarında çalışır.',
+        category: 'Yetkinlikler',
+        orderIndex: 1,
+      },
+      {
+        id: 'muhendislik-ve-yazilim',
+        question: 'Mühendislik ve yazılımı birlikte ele alıyor musunuz?',
+        answer: 'Evet. İleri mühendislik sistemleri ile güvenilir yazılımı; veri, simülasyon, yapay zekâ ve otomasyonla birlikte ele alıyoruz.',
+        category: 'Yetkinlikler',
+        orderIndex: 2,
+      },
+      {
+        id: 'proje-kapsami',
+        question: 'Projelerin kapsamı nasıl belirlenir?',
+        answer: 'Proje kapsamı ve çıktıları, her çalışmanın problemi, hedefleri ve kısıtları doğrultusunda belirlenir.',
+        category: 'Çalışma Modeli',
+        orderIndex: 3,
+      },
+      {
+        id: 'potansiyel-proje',
+        question: 'Potansiyel bir proje hakkında görüşebilir miyim?',
+        answer: 'Evet. İlgili çalışma alanını doğru değerlendirebilmemiz için projenin bağlamını, hedeflerini ve kısıtlarını paylaşabilirsiniz.',
+        category: 'Çalışma Modeli',
+        orderIndex: 4,
+      },
+    ]
+  : [
+      { id: 'what-is-aesir-axiom', question: 'What is AESIR AXIOM?', answer: 'AESIR AXIOM is a multidisciplinary engineering and technology company developing advanced engineering systems, AI, automation, reliable software, research, analytics, simulation, and real-world technology.', category: 'Company', orderIndex: 0 },
+      { id: 'practice-areas', question: 'Which fields does AESIR AXIOM work in?', answer: 'Our practice spans advanced engineering systems, artificial intelligence, automation, reliable software, research, data analytics, simulation, and applied technology.', category: 'Capabilities', orderIndex: 1 },
+      { id: 'engineering-and-software', question: 'Do you combine engineering and software?', answer: 'Yes. We treat physical engineering, reliable software, data, simulation, AI, and automation as parts of one operating system.', category: 'Capabilities', orderIndex: 2 },
+      { id: 'project-scope', question: 'How is project scope defined?', answer: 'Scope and deliverables are defined from the specific problem, objectives, constraints, operating context, and required level of assurance.', category: 'Working Model', orderIndex: 3 },
+      { id: 'project-conversation', question: 'Can we discuss a potential project?', answer: 'Yes. Share the context, objective, and known constraints through the contact form or request an engineering follow-up from ASGARDIAN.', category: 'Working Model', orderIndex: 4 },
+    ];
+
+const pageContent = await getPageContent('faq', locale, ['faq']);
+const hero = pageContent.sections.find((section) => section.sectionKey === 'hero');
+const copy = {
+  ...fallbackCopy,
+  eyebrow: hero?.eyebrow || fallbackCopy.eyebrow,
+  heading: hero?.title || fallbackCopy.heading,
+  introduction: hero?.body || fallbackCopy.introduction,
+};
+const cmsFaqItems: FaqItem[] = pageContent.items
+  .filter((item) => item.groupKey === 'faq' && item.title && item.body)
+  .map((item, index) => ({
+    id: item.id,
+    question: item.title,
+    answer: item.body,
+    category: item.category || (isTurkish ? 'Genel' : 'General'),
+    orderIndex: item.sortOrder || index,
+  }));
+const faqItems = cmsFaqItems.length ? cmsFaqItems : fallbackFaqItems;
+
+const categories = [...new Set(faqItems.map((item) => item.category))].map((name) => ({
+  name,
+  anchor: toAnchorId(name, 'general'),
+  items: faqItems.filter((item) => item.category === name),
+}));
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+>
+  <section class="border-b border-rule bg-paper" aria-labelledby="faq-heading">
+    <div class="mx-auto max-w-6xl px-lg py-3xl md:py-4xl">
+      <header class="max-w-[48rem]">
+        <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent">{copy.eyebrow}</p>
+        <h1 id="faq-heading" class="mt-lg font-display text-4xl leading-[1.03] tracking-[-0.035em] text-ink md:text-6xl">{copy.heading}</h1>
+        <p class="mt-xl text-lg leading-8 text-ink-soft">{copy.introduction}</p>
+      </header>
+
+      {categories.length > 1 && (
+        <nav class="mt-2xl flex flex-wrap gap-sm border-y border-rule py-md" aria-label={copy.categoriesLabel}>
+          {categories.map((category) => <a class="font-mono text-xs uppercase tracking-[0.13em] text-ink-soft transition-colors hover:text-accent focus-visible:text-accent" href={`#${category.anchor}`}>{category.name}</a>)}
+        </nav>
+      )}
+
+      <div class="mt-2xl max-w-[48rem]">
+        {categories.map((category, categoryIndex) => (
+          <section class:list={['faq-category', categoryIndex > 0 && 'mt-3xl']} id={category.anchor} aria-labelledby={`faq-category-${category.anchor}`}>
+            <div class="flex items-baseline gap-md border-b border-accent pb-sm">
+              <span class="font-mono text-xs tracking-[0.14em] text-accent">{String(categoryIndex + 1).padStart(2, '0')}</span>
+              <h2 id={`faq-category-${category.anchor}`} class="font-display text-2xl text-ink md:text-3xl">{category.name}</h2>
+            </div>
+            <div>
+              {category.items.map((item, index) => (
+                <details class="group border-b border-rule" id={toAnchorId(item.id, `question-${index + 1}`)}>
+                  <summary class="flex cursor-pointer list-none items-start justify-between gap-lg py-lg font-display text-xl leading-snug text-ink marker:content-none md:text-2xl">
+                    <span>{item.question}</span>
+                    <span class="mt-1 flex h-6 w-6 shrink-0 items-center justify-center border border-rule font-body text-lg leading-none text-accent transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+                  </summary>
+                  <div class="faq-answer pb-xl pr-xl text-base leading-7 text-ink-soft"><p>{item.answer}</p></div>
+                </details>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .faq-answer :global(p + p) { margin-top: var(--spacing-md); }
+  .faq-answer :global(h3), .faq-answer :global(h4) { margin-top: var(--spacing-lg); color: var(--color-ink); font-family: var(--font-display); line-height: 1.2; }
+  .faq-answer :global(ul), .faq-answer :global(ol) { margin-top: var(--spacing-md); padding-left: var(--spacing-lg); list-style: revert; }
+  .faq-answer :global(li + li) { margin-top: var(--spacing-xs); }
+  .faq-answer :global(a) { color: var(--color-accent); text-decoration: underline; text-underline-offset: 0.18em; }
+  .faq-answer :global(blockquote) { margin: var(--spacing-lg) 0; padding-left: var(--spacing-lg); border-left: 1px solid var(--color-accent); color: var(--color-ink); }
+</style>

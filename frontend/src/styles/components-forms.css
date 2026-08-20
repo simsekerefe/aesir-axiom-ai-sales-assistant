@@ -1,0 +1,167 @@
+/* Wix Forms island — static contract stylesheet.
+   Kept independent from the React submission logic so the form remains
+   readable before hydration and can be replaced without restyling the site. */
+.form-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-lg) var(--spacing-xl);
+  width: 100%;
+}
+
+.form-field {
+  display: grid;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.form-field:has(.form-textarea),
+.form-field:last-of-type,
+.form-button,
+.form-error,
+.form-success {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  color: var(--color-ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.required {
+  margin-left: 0.25rem;
+  color: var(--color-accent);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--color-rule) 82%, transparent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--color-paper-warm) 32%, transparent);
+  color: var(--color-ink);
+  outline: none;
+  padding: 0.9rem 1rem;
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: color-mix(in srgb, var(--color-mute) 80%, transparent);
+}
+
+.form-select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--color-accent) 50%),
+    linear-gradient(135deg, var(--color-accent) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1rem) calc(50% - 2px),
+    calc(100% - 0.72rem) calc(50% - 2px);
+  background-repeat: no-repeat;
+  background-size: 0.3rem 0.3rem;
+  padding-right: 2.5rem;
+}
+
+.form-textarea {
+  min-height: 10rem;
+  resize: vertical;
+}
+
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+  border-color: var(--color-mute);
+}
+
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-paper-warm) 48%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 24%, transparent);
+}
+
+.form-input-error {
+  border-color: var(--color-error);
+}
+
+.form-field-error,
+.form-error {
+  color: var(--color-error);
+  font-size: 0.8125rem;
+}
+
+.form-button {
+  position: relative;
+  display: inline-flex;
+  width: max-content;
+  min-width: 12rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  background: var(--color-accent);
+  color: var(--color-paper);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 1rem 1.4rem;
+  text-transform: uppercase;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.form-button:hover:not(:disabled) {
+  background: transparent;
+  color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.form-button:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+.form-button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.form-success {
+  border-left: 2px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-paper-warm) 44%, transparent);
+  color: var(--color-ink);
+  padding: var(--spacing-xl);
+}
+
+@media (max-width: 42rem) {
+  .form-container {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field,
+  .form-button,
+  .form-error,
+  .form-success {
+    grid-column: 1;
+  }
+
+  .form-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-input,
+  .form-select,
+  .form-textarea,
+  .form-button {
+    transition: none;
+  }
+}

@@ -1,0 +1,243 @@
+openapi: 3.1.0
+info:
+  title: AESIR AXIOM ASGARDIAN API
+  version: 1.1.0
+  description: >-
+    Public chat and lead intake endpoints plus the employee-protected lead
+    operations contract. Error bodies never expose provider, database, or
+    credential details.
+servers:
+  - url: https://aesir-axiom-ai-sales-assistant.onrender.com
+    description: Production on Render
+paths:
+  /health:
+    get:
+      summary: Verify application, database, and safe AI configuration status
+      operationId: getHealth
+      responses:
+        '200':
+          description: Application and database are operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /api/sohbet:
+    post:
+      summary: Generate an ASGARDIAN response
+      operationId: createChatResponse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: AI or explicit demo response generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '413':
+          $ref: '#/components/responses/RequestTooLarge'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /api/leads:
+    post:
+      summary: Store a visitor lead
+      operationId: createLead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeadRequest'
+      responses:
+        '201':
+          description: Lead stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '413':
+          $ref: '#/components/responses/RequestTooLarge'
+        '500':
+          description: Safe persistence failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: List leads for an authenticated employee
+      operationId: listLeads
+      security:
+        - employeeSession: []
+      responses:
+        '200':
+          description: Leads ordered newest first
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [basari, leadler]
+                properties:
+                  basari:
+                    const: true
+                  leadler:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Lead'
+        '401':
+          description: Employee session required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    employeeSession:
+      type: apiKey
+      in: cookie
+      name: asgardian_employee_session
+  schemas:
+    ChatHistoryEntry:
+      type: object
+      additionalProperties: false
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+          minLength: 1
+          maxLength: 2000
+    ChatRequest:
+      type: object
+      additionalProperties: true
+      required: [mesaj]
+      properties:
+        mesaj:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        gecmis:
+          type: array
+          maxItems: 12
+          items:
+            $ref: '#/components/schemas/ChatHistoryEntry'
+        dil:
+          type: string
+          enum: [tr, en]
+          default: tr
+    ChatResponse:
+      type: object
+      required: [basari, cevap]
+      properties:
+        basari:
+          const: true
+        cevap:
+          type: string
+    LeadRequest:
+      type: object
+      additionalProperties: true
+      required: [isim, telefon]
+      properties:
+        isim:
+          type: string
+          minLength: 1
+          maxLength: 120
+        telefon:
+          type: string
+          minLength: 1
+          maxLength: 40
+        mesaj:
+          type: [string, 'null']
+          maxLength: 6000
+    LeadCreated:
+      type: object
+      required: [basari, id]
+      properties:
+        basari:
+          const: true
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+    Lead:
+      type: object
+      required: [id, isim, telefon, tarih]
+      properties:
+        id:
+          oneOf:
+            - type: integer
+            - type: string
+        isim:
+          type: string
+        telefon:
+          type: string
+        mesaj:
+          type: [string, 'null']
+        tarih:
+          type: string
+          format: date-time
+    Health:
+      type: object
+      required:
+        - basari
+        - durum
+        - veritabani
+        - veritabani_turu
+        - yapay_zeka
+        - yapay_zeka_saglayici
+        - yapay_zeka_modeli
+      properties:
+        basari:
+          const: true
+        durum:
+          const: aktif
+        veritabani:
+          const: aktif
+        veritabani_turu:
+          type: string
+          enum: [postgresql, sqlite]
+        yapay_zeka:
+          type: string
+          enum: [aktif, demo]
+        yapay_zeka_saglayici:
+          type: string
+        yapay_zeka_modeli:
+          type: string
+    Error:
+      type: object
+      required: [basari, hata]
+      properties:
+        basari:
+          const: false
+        hata:
+          type: string
+  responses:
+    BadRequest:
+      description: Payload failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RequestTooLarge:
+      description: Request exceeded the 64 KiB server limit
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: A required external dependency is unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

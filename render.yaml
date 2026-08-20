@@ -33,4 +33,4 @@ services:
           name: aesir-axiom-postgres
           property: connectionString
       - key: CORS_ORIGINS
-        value: https://simsekerismetefe.wixsite.com,https://simsekerismetefe.wixstudio.com
+        value: https://aesir-axio-b8ecbbfe-simsekerismetefe.wix-site-host.com,https://simsekerismetefe.wixsite.com,https://simsekerismetefe.wixstudio.com
