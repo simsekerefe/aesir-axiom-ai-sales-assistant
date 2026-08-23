@@ -116,6 +116,9 @@ export default function ContactForm({ formId, fields, locale = "en" }: ContactFo
         select: "Bir seçenek belirleyin",
         sending: "Talep gönderiliyor…",
         send: "Talebi gönder",
+        privacyLead: "Formu kullanırken paylaştığınız kişisel verilerin nasıl işlendiğini",
+        privacyLink: "KVKK Aydınlatma Metni",
+        privacyTail: "içinde inceleyebilirsiniz.",
       }
     : {
         required: (label: string) => `${label} is required.`,
@@ -130,6 +133,9 @@ export default function ContactForm({ formId, fields, locale = "en" }: ContactFo
         select: "Select an option",
         sending: "Sending inquiry…",
         send: "Send inquiry",
+        privacyLead: "Learn how personal data submitted through this form is handled in our",
+        privacyLink: "Privacy / KVKK Notice",
+        privacyTail: ".",
       };
   const formInstanceId = useId();
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -247,6 +253,8 @@ export default function ContactForm({ formId, fields, locale = "en" }: ContactFo
     );
   }
 
+  const privacyHref = locale === "tr" ? "/tr/privacy" : "/privacy";
+
   return (
     <form className="form-container" noValidate onSubmit={handleSubmit} aria-busy={status === "submitting"}>
       {status === "error" && (
@@ -305,6 +313,12 @@ export default function ContactForm({ formId, fields, locale = "en" }: ContactFo
           </div>
         );
       })}
+
+      <p className="form-legal-note">
+        {copy.privacyLead}{" "}
+        <a href={privacyHref} data-kvkk-open>{copy.privacyLink}</a>{" "}
+        {copy.privacyTail}
+      </p>
 
       <button className="form-button" type="submit" disabled={status === "submitting"}>
         {status === "submitting" ? copy.sending : copy.send}
