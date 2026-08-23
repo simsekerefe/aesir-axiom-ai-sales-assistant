@@ -1,0 +1,165 @@
+---
+type Locale = 'en' | 'tr';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'en' } = Astro.props;
+const isTurkish = locale === 'tr';
+const privacyPath = isTurkish ? '/tr/privacy' : '/privacy';
+
+const copy = isTurkish
+  ? {
+      eyebrow: 'KVKK / AYDINLATMA',
+      title: 'Kişisel Verilerin Korunması Aydınlatma Metni',
+      intro: 'Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında AESIR AXIOM web sitesi, iletişim formu ve ASGARDIAN üzerinden elde edilen kişisel verilerin işlenmesine ilişkin temel bilgileri açıklar.',
+      close: 'Kapat',
+      fullPage: 'Tam sayfada görüntüle',
+      sections: [
+        ['Veri sorumlusu', 'AESIR AXIOM, bu web sitesi ve dijital iletişim kanalları üzerinden elde edilen kişisel veriler bakımından veri sorumlusu sıfatıyla hareket eder. Kişisel verilere ilişkin başvurular iletişim sayfasındaki kanallar üzerinden iletilebilir.'],
+        ['İşlenen kişisel veriler', 'İletişim formunda ad, şirket, e-posta, telefon, proje türü ve mesaj bilgileri işlenebilir. ASGARDIAN kullanımında kullanıcının yazdığı konuşma içeriği işlenir. Hizmetin güvenliği ve sürekliliği için gerekli sınırlı teknik kayıtlar da sistem tarafından işlenebilir.'],
+        ['İşleme amaçları', 'Kişisel veriler; talebin değerlendirilmesi, doğru çalışma alanına yönlendirilmesi, kullanıcıyla iletişim kurulması, potansiyel müşteri kaydının oluşturulması, hizmet güvenliği ve sistem sürekliliğinin sağlanması amaçlarıyla işlenir.'],
+        ['Toplama yöntemi ve hukuki sebep', 'Veriler elektronik ortamda iletişim formu, ASGARDIAN arayüzü ve ilgili sunucu katmanları üzerinden elde edilir. İşleme faaliyeti, niteliğine göre KVKK madde 5 kapsamındaki sözleşmenin kurulması veya ifasıyla doğrudan ilgili olma, hukuki yükümlülüğün yerine getirilmesi ve ilgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla meşru menfaat şartlarına dayanır; açık rıza gerektiren ayrı bir faaliyet söz konusu olduğunda ayrıca açık rıza alınır.'],
+        ['Aktarım ve veri minimizasyonu', 'Veriler yalnızca hizmetin çalışması için gerekli olduğu ölçüde yetkili AESIR AXIOM çalışanları ile barındırma, form yönetimi, altyapı ve yapay zekâ hizmeti sağlayıcıları gibi hizmet alınan alıcı gruplarına aktarılabilir. Operasyonel müşteri verisinin gereksiz üçüncü taraf sistemler arasında dolaştırılmaması ve aktarılan veri kapsamının asgari tutulması esas alınır.'],
+        ['Saklama ve güvenlik', 'Kişisel veriler işleme amacı ve uygulanabilir hukuki yükümlülükler için gerekli süreyle sınırlı olarak saklanır. Erişim kontrolü, sunucu tarafı doğrulama, yetkili çalışan oturumu ve veri minimizasyonu gibi tedbirler uygulanır.'],
+        ['İlgili kişinin hakları', 'KVKK madde 11 kapsamında; kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, işleme amacını ve amaca uygun kullanılıp kullanılmadığını öğrenme, aktarıldığı üçüncü kişileri bilme, eksik veya yanlış işlenmiş verilerin düzeltilmesini isteme, şartları oluştuğunda silme veya yok etme talep etme, bu işlemlerin aktarılan üçüncü kişilere bildirilmesini isteme, münhasıran otomatik sistemler sonucu aleyhe bir sonucun ortaya çıkmasına itiraz etme ve kanuna aykırı işleme nedeniyle zarara uğranması hâlinde zararın giderilmesini talep etme haklarına sahipsiniz.'],
+        ['Başvuru', 'KVKK kapsamındaki taleplerinizi iletişim sayfası üzerinden AESIR AXIOM’a iletebilirsiniz. Başvurular, talebin niteliği ve uygulanabilir mevzuat çerçevesinde değerlendirilir.'],
+      ],
+    }
+  : {
+      eyebrow: 'PRIVACY / KVKK',
+      title: 'Personal Data Processing Notice',
+      intro: 'This notice summarizes how AESIR AXIOM processes personal data submitted through the website, inquiry form and ASGARDIAN under Türkiye’s Law No. 6698 on the Protection of Personal Data (KVKK).',
+      close: 'Close',
+      fullPage: 'View full page',
+      sections: [
+        ['Data controller', 'AESIR AXIOM acts as the data controller for personal data collected through this website and its digital inquiry channels. Data-related requests can be submitted through the contact page.'],
+        ['Data processed', 'The inquiry form may process name, company, email, phone number, project type and message details. ASGARDIAN processes the conversation content entered by the user. Limited technical records required for service security and continuity may also be processed.'],
+        ['Purposes', 'Data is processed to assess and route inquiries, communicate with users, create and manage potential customer records, and maintain service security and continuity.'],
+        ['Collection method and legal basis', 'Data is obtained electronically through the inquiry form, ASGARDIAN interface and related server layers. Depending on the activity, processing relies on applicable conditions under Article 5 of KVKK, including steps directly related to establishing or performing a contract, compliance with legal obligations and legitimate interests that do not override fundamental rights; separate consent is obtained where a specific activity legally requires consent.'],
+        ['Transfers and minimization', 'Data may be shared only to the extent necessary with authorized AESIR AXIOM personnel and service-provider groups supporting hosting, forms, infrastructure and AI functionality. The system is designed to minimize unnecessary circulation of operational customer data across third-party systems.'],
+        ['Retention and security', 'Personal data is retained only for the period required by the processing purpose and applicable legal obligations. Measures include access control, server-side validation, authenticated employee access and data minimization.'],
+        ['Your rights', 'Subject to Article 11 of KVKK, you may request information about processing, purposes and recipients; correction of incomplete or inaccurate data; deletion or destruction where the legal conditions are met; notification of such actions to relevant recipients; objection to adverse results produced exclusively by automated systems; and compensation for damage caused by unlawful processing.'],
+        ['Requests', 'You may submit privacy and KVKK requests to AESIR AXIOM through the contact page. Requests are assessed according to their nature and applicable law.'],
+      ],
+    };
+---
+
+<dialog class="kvkk-dialog" data-kvkk-dialog aria-labelledby="kvkk-dialog-title">
+  <div class="kvkk-panel">
+    <header class="kvkk-header">
+      <div>
+        <p class="kvkk-eyebrow">{copy.eyebrow}</p>
+        <h2 id="kvkk-dialog-title">{copy.title}</h2>
+      </div>
+      <button type="button" class="kvkk-close" data-kvkk-close aria-label={copy.close}>×</button>
+    </header>
+
+    <div class="kvkk-content">
+      <p class="kvkk-intro">{copy.intro}</p>
+      <ol>
+        {copy.sections.map(([title, body], index) => (
+          <li>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <div>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <footer class="kvkk-actions">
+      <a href={privacyPath}>{copy.fullPage}</a>
+      <button type="button" data-kvkk-close>{copy.close}</button>
+    </footer>
+  </div>
+</dialog>
+
+<style>
+  .kvkk-dialog {
+    width: min(56rem, calc(100% - 2rem));
+    max-height: min(82vh, 52rem);
+    margin: auto;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 42%, var(--color-rule));
+    border-radius: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: 0 2rem 5rem rgb(0 0 0 / .38);
+  }
+
+  .kvkk-dialog::backdrop {
+    background: rgb(4 8 13 / .76);
+    backdrop-filter: blur(7px);
+  }
+
+  .kvkk-panel { display: grid; min-height: 0; }
+  .kvkk-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.5rem 1.6rem 1.2rem;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .kvkk-eyebrow {
+    margin: 0 0 .55rem;
+    color: var(--color-accent);
+    font: .67rem/1.3 var(--font-mono);
+    letter-spacing: .16em;
+  }
+  .kvkk-header h2 { margin: 0; max-width: 42rem; font-size: clamp(1.45rem, 3vw, 2.35rem); line-height: 1.15; }
+  .kvkk-close {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--color-rule);
+    background: transparent;
+    color: var(--color-ink);
+    font-size: 1.55rem;
+    line-height: 1;
+  }
+  .kvkk-content { overflow: auto; padding: 1.45rem 1.6rem 1.2rem; overscroll-behavior: contain; }
+  .kvkk-intro { margin: 0 0 1.5rem; color: var(--color-ink-soft); line-height: 1.75; }
+  .kvkk-content ol { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--color-rule); }
+  .kvkk-content li { display: grid; grid-template-columns: 2.8rem 1fr; gap: .9rem; padding: 1.15rem 0; border-bottom: 1px solid var(--color-rule); }
+  .kvkk-content li > span { color: var(--color-accent); font: .65rem/1.4 var(--font-mono); letter-spacing: .12em; }
+  .kvkk-content h3 { margin: 0; font-size: 1.05rem; }
+  .kvkk-content li p { margin: .5rem 0 0; color: var(--color-ink-soft); font-size: .92rem; line-height: 1.7; }
+  .kvkk-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .8rem;
+    padding: 1rem 1.6rem;
+    border-top: 1px solid var(--color-rule);
+  }
+  .kvkk-actions a,
+  .kvkk-actions button {
+    min-height: 2.65rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-rule);
+    background: transparent;
+    color: var(--color-ink);
+    font: .68rem/1 var(--font-mono);
+    letter-spacing: .1em;
+    padding: .8rem 1rem;
+    text-transform: uppercase;
+  }
+  .kvkk-actions button { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-paper); }
+  .kvkk-close:focus-visible,
+  .kvkk-actions a:focus-visible,
+  .kvkk-actions button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+
+  @media (max-width: 40rem) {
+    .kvkk-dialog { width: calc(100% - 1rem); max-height: 88vh; }
+    .kvkk-header, .kvkk-content, .kvkk-actions { padding-left: 1rem; padding-right: 1rem; }
+    .kvkk-content li { grid-template-columns: 2rem 1fr; }
+    .kvkk-actions { align-items: stretch; flex-direction: column; }
+  }
+</style>
