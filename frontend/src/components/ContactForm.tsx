@@ -253,8 +253,6 @@ export default function ContactForm({ formId, fields, locale = "en" }: ContactFo
     );
   }
 
-  const privacyHref = locale === "tr" ? "/tr/privacy" : "/privacy";
-
   return (
     <form className="form-container" noValidate onSubmit={handleSubmit} aria-busy={status === "submitting"}>
       {status === "error" && (
@@ -316,7 +314,7 @@ export default function ContactForm({ formId, fields, locale = "en" }: ContactFo
 
       <p className="form-legal-note">
         {copy.privacyLead}{" "}
-        <a href={privacyHref} data-kvkk-open>{copy.privacyLink}</a>{" "}
+        <button type="button" className="kvkk-trigger" data-kvkk-open>{copy.privacyLink}</button>{" "}
         {copy.privacyTail}
       </p>
 

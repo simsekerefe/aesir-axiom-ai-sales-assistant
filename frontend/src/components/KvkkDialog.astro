@@ -77,6 +77,7 @@ const copy = isTurkish
 
 <style>
   .kvkk-dialog {
+    z-index: 3000;
     width: min(56rem, calc(100% - 2rem));
     max-height: min(84vh, 54rem);
     margin: auto;
@@ -92,6 +93,10 @@ const copy = isTurkish
   .kvkk-dialog::backdrop {
     background: rgb(4 8 13 / .76);
     backdrop-filter: blur(7px);
+  }
+
+  :global(body:has(.kvkk-dialog[open])) {
+    overflow: hidden;
   }
 
   .kvkk-panel {

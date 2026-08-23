@@ -106,19 +106,23 @@
   line-height: 1.65;
 }
 
-.form-legal-note a {
+.form-legal-note .kvkk-trigger {
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--color-accent);
+  font: inherit;
   font-weight: 600;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.22em;
 }
 
-.form-legal-note a:hover {
+.form-legal-note .kvkk-trigger:hover {
   color: var(--color-ink);
 }
 
-.form-legal-note a:focus-visible {
+.form-legal-note .kvkk-trigger:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }

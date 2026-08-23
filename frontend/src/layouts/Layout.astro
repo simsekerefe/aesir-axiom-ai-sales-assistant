@@ -150,9 +150,11 @@ const identifier = siteSettings?.brandIdentifier || (locale === 'tr' ? 'Mühendi
 
           const openTrigger = target.closest<HTMLElement>("[data-kvkk-open]");
           if (openTrigger) {
+            // Intercept before Astro's ClientRouter or any other delegated
+            // click handler. The notice must remain on the current page.
+            event.preventDefault();
             const dialog = document.querySelector<HTMLDialogElement>("[data-kvkk-dialog]");
             if (dialog?.showModal) {
-              event.preventDefault();
               if (!dialog.open) dialog.showModal();
             }
             return;
@@ -167,7 +169,7 @@ const identifier = siteSettings?.brandIdentifier || (locale === 'tr' ? 'Mühendi
           if (target instanceof HTMLDialogElement && target.matches("[data-kvkk-dialog]")) {
             target.close();
           }
-        });
+        }, { capture: true });
       }
     </script>
   </body>

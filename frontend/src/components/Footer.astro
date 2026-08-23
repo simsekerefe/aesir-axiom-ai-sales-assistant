@@ -88,7 +88,7 @@ const emblemUrl = resolveWixImageUrl(settings?.emblem, 128, 128) || "/assets/aes
     <div class="footer-meta">
       <p>© {year} {brandName}. {copy.rights}</p>
       <div aria-label={copy.legal}>
-        <a href={`${base}/privacy`} title={copy.privacyTitle} data-kvkk-open>{copy.privacy}</a>
+        <button type="button" class="kvkk-trigger" title={copy.privacyTitle} data-kvkk-open>{copy.privacy}</button>
         <a href={`${base}/terms`} title={copy.termsTitle}>{copy.terms}</a>
       </div>
     </div>

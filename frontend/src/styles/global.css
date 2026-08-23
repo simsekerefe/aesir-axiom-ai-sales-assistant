@@ -367,13 +367,24 @@
   color: var(--color-accent);
 }
 .site-nav-item a,
-.site-footer a {
+.site-footer a,
+.site-footer .kvkk-trigger {
   color: var(--color-ink-soft);
   transition: color 180ms ease;
 }
 .site-nav-item a:hover,
-.site-footer a:hover {
+.site-footer a:hover,
+.site-footer .kvkk-trigger:hover {
   color: var(--color-accent);
+}
+.site-footer .kvkk-trigger {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.site-footer .kvkk-trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 .site-footer {
   background: #0c1118;
