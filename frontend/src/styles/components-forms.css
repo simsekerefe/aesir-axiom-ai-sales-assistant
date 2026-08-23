@@ -16,6 +16,7 @@
 
 .form-field:has(.form-textarea),
 .form-field:last-of-type,
+.form-legal-note,
 .form-button,
 .form-error,
 .form-success {
@@ -97,6 +98,31 @@
   font-size: 0.8125rem;
 }
 
+.form-legal-note {
+  margin: -0.1rem 0 0;
+  max-width: 46rem;
+  color: var(--color-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.form-legal-note a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.form-legal-note a:hover {
+  color: var(--color-ink);
+}
+
+.form-legal-note a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
 .form-button {
   position: relative;
   display: inline-flex;
@@ -146,6 +172,7 @@
   }
 
   .form-field,
+  .form-legal-note,
   .form-button,
   .form-error,
   .form-success {
