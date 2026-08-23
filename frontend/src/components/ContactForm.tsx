@@ -117,7 +117,7 @@ export default function ContactForm({ formId, fields, locale = "en" }: ContactFo
         sending: "Talep gönderiliyor…",
         send: "Talebi gönder",
         privacyLead: "Formu kullanırken paylaştığınız kişisel verilerin nasıl işlendiğini",
-        privacyLink: "KVKK Aydınlatma Metni",
+        privacyLink: "KVKK Metni",
         privacyTail: "içinde inceleyebilirsiniz.",
       }
     : {
