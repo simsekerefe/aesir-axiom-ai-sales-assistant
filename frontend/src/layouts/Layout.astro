@@ -5,6 +5,7 @@ import '../styles/components-asgardian.css';
 import { ClientRouter } from 'astro:transitions';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import KvkkDialog from '../components/KvkkDialog.astro';
 import AsgardianChat from '../components/AsgardianChat';
 import { getShellContent } from '../lib/cms';
 import { resolveWixImageUrl } from '../utils/wix-image';
@@ -97,6 +98,7 @@ const identifier = siteSettings?.brandIdentifier || (locale === 'tr' ? 'Mühendi
     <Navigation locale={locale} settings={siteSettings} />
     <main><slot /></main>
     <Footer locale={locale} settings={siteSettings} />
+    <KvkkDialog locale={locale} />
     <div transition:persist={`asgardian-chat-${locale}`}>
       <AsgardianChat client:load locale={locale} emblemUrl={emblemUrl} />
     </div>
@@ -137,6 +139,36 @@ const identifier = siteSettings?.brandIdentifier || (locale === 'tr' ? 'Mühendi
       });
       if (document.readyState === "complete") dismissLoader();
       else window.addEventListener("load", dismissLoader, { once: true });
+
+      // Progressive enhancement for the legal notice. All triggers retain
+      // a normal privacy-page href so the content remains available without JS.
+      if (!document.documentElement.dataset.kvkkDialogBound) {
+        document.documentElement.dataset.kvkkDialogBound = "true";
+        document.addEventListener("click", (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+
+          const openTrigger = target.closest<HTMLElement>("[data-kvkk-open]");
+          if (openTrigger) {
+            const dialog = document.querySelector<HTMLDialogElement>("[data-kvkk-dialog]");
+            if (dialog?.showModal) {
+              event.preventDefault();
+              if (!dialog.open) dialog.showModal();
+            }
+            return;
+          }
+
+          const closeTrigger = target.closest<HTMLElement>("[data-kvkk-close]");
+          if (closeTrigger) {
+            closeTrigger.closest<HTMLDialogElement>("[data-kvkk-dialog]")?.close();
+            return;
+          }
+
+          if (target instanceof HTMLDialogElement && target.matches("[data-kvkk-dialog]")) {
+            target.close();
+          }
+        });
+      }
     </script>
   </body>
 </html>
