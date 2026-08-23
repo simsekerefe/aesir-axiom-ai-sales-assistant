@@ -28,8 +28,8 @@ const fallbackCopy = isTurkish
       contact: "İletişim",
       rights: "Tüm hakları saklıdır.",
       legal: "Yasal ve sosyal bağlantılar",
-      privacy: "Gizlilik",
-      privacyTitle: "Gizlilik bildirimini okuyun",
+      privacy: "KVKK Aydınlatma Metni",
+      privacyTitle: "KVKK aydınlatma metnini görüntüleyin",
       terms: "Koşullar",
       termsTitle: "Kullanım koşullarını okuyun",
       homeLabel: "AESIR AXIOM ana sayfa",
@@ -47,8 +47,8 @@ const fallbackCopy = isTurkish
       contact: "Contact",
       rights: "All rights reserved.",
       legal: "Legal and social links",
-      privacy: "Privacy",
-      privacyTitle: "Read the privacy notice",
+      privacy: "Privacy / KVKK",
+      privacyTitle: "Read the privacy and KVKK notice",
       terms: "Terms",
       termsTitle: "Read the terms of use",
       homeLabel: "AESIR AXIOM home",
@@ -88,7 +88,7 @@ const emblemUrl = resolveWixImageUrl(settings?.emblem, 128, 128) || "/assets/aes
     <div class="footer-meta">
       <p>© {year} {brandName}. {copy.rights}</p>
       <div aria-label={copy.legal}>
-        <a href={`${base}/privacy`} title={copy.privacyTitle}>{copy.privacy}</a>
+        <a href={`${base}/privacy`} title={copy.privacyTitle} data-kvkk-open>{copy.privacy}</a>
         <a href={`${base}/terms`} title={copy.termsTitle}>{copy.terms}</a>
       </div>
     </div>
