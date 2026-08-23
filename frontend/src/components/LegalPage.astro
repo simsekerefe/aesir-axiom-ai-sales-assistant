@@ -15,17 +15,20 @@ const isTurkish = locale === 'tr';
 
 const privacy = isTurkish
   ? {
-      title: 'Gizlilik Bildirimi',
-      description: 'AESIR AXIOM web sitesi, iletişim formları ve ASGARDIAN asistanında kişisel verilerin nasıl işlendiğine ilişkin açıklama.',
-      eyebrow: 'YASAL / 01',
-      heading: 'Gizlilik bildirimi.',
-      introduction: 'Bu bildirim, AESIR AXIOM web sitesinde doğrudan paylaştığınız bilgilerin hangi amaçlarla işlendiğini ve sistemin veri akışını açıklar.',
+      title: 'KVKK Aydınlatma Metni',
+      description: 'AESIR AXIOM web sitesi, iletişim formu ve ASGARDIAN üzerinden elde edilen kişisel verilerin işlenmesine ilişkin KVKK aydınlatma metni.',
+      eyebrow: 'KVKK / AYDINLATMA',
+      heading: 'Kişisel Verilerin Korunması Aydınlatma Metni',
+      introduction: 'Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında AESIR AXIOM web sitesi, iletişim formu ve ASGARDIAN üzerinden elde edilen kişisel verilerin işlenmesine ilişkin temel bilgileri açıklar.',
       sections: [
-        ['Toplanan bilgiler', 'İletişim formu; ad, şirket, e-posta, telefon, proje türü ve mesaj bilgilerini alabilir. ASGARDIAN yalnızca yazdığınız konuşma içeriğini işler; iletişim bilgileri ise takip formunu ayrıca gönderdiğinizde alınır.'],
-        ['İşleme amaçları', 'Bilgiler; talebinizi değerlendirmek, uygun çalışma alanına yönlendirmek, sizinle iletişim kurmak ve hizmet güvenilirliğini korumak amacıyla kullanılır.'],
-        ['Sistem akışı', 'Form gönderimleri Wix üzerinde kaydedilir ve çalışan takip akışı için AESIR AXIOM backend hizmetine yönlendirilir. ASGARDIAN mesajları, yanıt üretimi için yapılandırılmış yapay zekâ model sağlayıcısına iletilir.'],
-        ['Güvenlik ve veri minimizasyonu', 'API anahtarları tarayıcıya gönderilmez. İstekler sunucu katmanında doğrulanır ve yalnızca hizmet için gereken alanlar aktarılır. ASGARDIAN görüşmesine ticari sır, özel nitelikli kişisel veri veya güvenlik açısından kritik bilgi girmeyin.'],
-        ['Başvurular', 'Bilgilerinizle ilgili erişim, düzeltme veya silme talebinizi iletişim sayfasındaki form üzerinden iletebilirsiniz. Talep, uygulanabilir mevzuat ve sistem kayıtları doğrultusunda değerlendirilir.'],
+        ['Veri sorumlusu', 'AESIR AXIOM, bu web sitesi ve dijital iletişim kanalları üzerinden elde edilen kişisel veriler bakımından veri sorumlusu sıfatıyla hareket eder. Kişisel verilere ilişkin başvurular iletişim sayfasındaki kanallar üzerinden iletilebilir.'],
+        ['İşlenen kişisel veriler', 'İletişim formunda ad, şirket, e-posta, telefon, proje türü ve mesaj bilgileri işlenebilir. ASGARDIAN kullanımında kullanıcının yazdığı konuşma içeriği işlenir. Hizmetin güvenliği ve sürekliliği için gerekli sınırlı teknik kayıtlar da sistem tarafından işlenebilir.'],
+        ['İşleme amaçları', 'Kişisel veriler; talebin değerlendirilmesi, doğru çalışma alanına yönlendirilmesi, kullanıcıyla iletişim kurulması, potansiyel müşteri kaydının oluşturulması, hizmet güvenliği ve sistem sürekliliğinin sağlanması amaçlarıyla işlenir.'],
+        ['Toplama yöntemi ve hukuki sebep', 'Veriler elektronik ortamda iletişim formu, ASGARDIAN arayüzü ve ilgili sunucu katmanları üzerinden elde edilir. İşleme faaliyeti, niteliğine göre KVKK madde 5 kapsamındaki sözleşmenin kurulması veya ifasıyla doğrudan ilgili olma, hukuki yükümlülüğün yerine getirilmesi ve ilgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla meşru menfaat şartlarına dayanır; açık rıza gerektiren ayrı bir faaliyet söz konusu olduğunda ayrıca açık rıza alınır.'],
+        ['Aktarım ve veri minimizasyonu', 'Veriler yalnızca hizmetin çalışması için gerekli olduğu ölçüde yetkili AESIR AXIOM çalışanları ile barındırma, form yönetimi, altyapı ve yapay zekâ hizmeti sağlayıcıları gibi hizmet alınan alıcı gruplarına aktarılabilir. Operasyonel müşteri verisinin gereksiz üçüncü taraf sistemler arasında dolaştırılmaması ve aktarılan veri kapsamının asgari tutulması esas alınır.'],
+        ['Saklama ve güvenlik', 'Kişisel veriler işleme amacı ve uygulanabilir hukuki yükümlülükler için gerekli süreyle sınırlı olarak saklanır. Erişim kontrolü, sunucu tarafı doğrulama, yetkili çalışan oturumu ve veri minimizasyonu gibi tedbirler uygulanır.'],
+        ['İlgili kişinin hakları', 'KVKK madde 11 kapsamında; kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, işleme amacını ve amaca uygun kullanılıp kullanılmadığını öğrenme, aktarıldığı üçüncü kişileri bilme, eksik veya yanlış işlenmiş verilerin düzeltilmesini isteme, şartları oluştuğunda silme veya yok etme talep etme, bu işlemlerin aktarılan üçüncü kişilere bildirilmesini isteme, münhasıran otomatik sistemler sonucu aleyhe bir sonucun ortaya çıkmasına itiraz etme ve kanuna aykırı işleme nedeniyle zarara uğranması hâlinde zararın giderilmesini talep etme haklarına sahipsiniz.'],
+        ['Başvuru', 'KVKK kapsamındaki taleplerinizi iletişim sayfası üzerinden AESIR AXIOM’a iletebilirsiniz. Başvurular, talebin niteliği ve uygulanabilir mevzuat çerçevesinde değerlendirilir.'],
       ],
     }
   : {
